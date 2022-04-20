@@ -1,5 +1,5 @@
 
-#import "_imports.asm"
+#import "_label.asm"
 
 .file [name="./SpaceInvaders.prg", segments="Code, Charsets, CharsetsColors, MapData, Sprites", modify="BasicUpstart", _start=$0810]
 .disk [filename="./SpaceInvaders.d64", name="SPACEINVADERS", id="C2022", showInfo]
@@ -46,7 +46,8 @@ Entry: {
     sta c64lib.BORDER_COL
 
     jsr SetColorToChars
-    jmp *
+
+    SetupSprites()
 }
 
 SetColorToChars: {
@@ -81,6 +82,33 @@ SetColorToChars: {
     rts
 
   CleanLoop: .byte $03
+}
+
+.macro SetupSprites() {
+    lda #SPRITES.SHOOTER
+    sta SPRITES.SPRITES_0
+
+    lda #$ff
+    sta c64lib.SPRITE_ENABLE
+    sta c64lib.SPRITE_COL_MODE
+
+    lda #0
+    sta c64lib.SPRITE_MSB_X
+    lda c64lib.SPRITE_EXPAND_X
+    lda c64lib.SPRITE_EXPAND_Y
+
+    lda #BLUE
+    sta c64lib.SPRITE_COL_0
+    lda #WHITE
+    sta c64lib.SPRITE_COL_1
+    
+    lda #GREEN
+    sta c64lib.SPRITE_0_COLOR
+
+    lda #250
+    sta c64lib.SPRITE_0_X
+    lda #228
+    sta c64lib.SPRITE_0_Y
 }
 
 #import "chipset/lib/vic2.asm"
