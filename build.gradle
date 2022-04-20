@@ -1,0 +1,53 @@
+
+plugins {
+    id "com.github.c64lib.retro-assembler" version "1.5.3"
+}
+
+repositories {
+    mavenCentral()
+}
+
+apply plugin: "com.github.c64lib.retro-assembler"
+
+retroProject {
+    dialect = "KickAssembler"
+    dialectVersion = "5.24"
+    libDirs = [".ra/deps/c64lib"]
+    srcDirs = ["."]
+    excludes = ["**/_*.asm", ".ra/**/*", "libs/*"]
+
+    // dependencies
+    libFromGitHub "c64lib/common", "0.3.0"
+    libFromGitHub "c64lib/chipset", "0.3.0"
+}
+
+preprocess {
+    // Game charset, colors and maps
+    charpad {
+        getInput().set(file("./assets/map.ctm"))
+        getUseBuildDir().set(false)
+        outputs {
+            charset {
+                output = file("./assets/charset.bin")
+            }
+            charsetAttributes {
+                nybbler {
+                    loOutput = file("./assets/charcolors.bin")
+                }
+            }
+
+    // Main map
+            map {
+                left = 0
+                top = 0
+                right = 40
+                bottom = 25
+                interleaver {
+                    output = file("./assets/mainmap.bin")
+                }
+                interleaver {
+                }
+            }
+        }
+    }
+}
