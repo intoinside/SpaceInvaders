@@ -31,6 +31,19 @@ SPRITES: {
   .label SPRITES_0 = MapData + $3f8
 }
 
+CIA1: {
+  .label PORT_A             = $dc00
+  .label PORT_B             = $dc01
+  .label PORT_A_DIRECTION   = $dc02
+  .label PORT_B_DIRECTION   = $dc03
+}
+
 CIA2: {
   .label PORT_A = $dd00
+}
+
+KEYB: {
+  .label CURRENT_PRESSED    = $00cb
+  .label BUFFER_LEN         = $0289
+  .label REPEAT_SWITCH      = $028a
 }

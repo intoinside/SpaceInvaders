@@ -17,9 +17,16 @@
 
 * = $0810 "Entry"
 Entry: {
+    IsReturnPressedAndReleased()
     MainGameSettings()
 
-    jmp *
+  !:
+    IsReturnPressedAndReleased()
+    jsr MoveAliensToLeft
+    // jsr MoveAliensToRight
+    jsr SetColorToChars
+
+    jmp !-
 }
 
 .macro MainGameSettings() {
@@ -50,21 +57,27 @@ Entry: {
     SetupSprites()
 }
 
+* = * "SetColorToChars"
 SetColorToChars: {
     lda #$04
     sta CleanLoop
+    lda #0
+    sta StartLoop + 1
+    lda #>MapData
+    sta PaintCols + 2
+    lda #$d8
+    sta ColorMap + 2
   StartLoop:
     ldx #$00
   PaintCols:
-  Dummy1:
-    ldy $4000, x
+    ldy MapData, x
     lda CharsetsColors, y
   ColorMap:
     sta $d800, x
     dex
     bne PaintCols
 
-    inc Dummy1 + 2
+    inc PaintCols + 2
     inc ColorMap + 2
     dec CleanLoop
     lda CleanLoop
@@ -110,5 +123,8 @@ SetColorToChars: {
     lda #228
     sta c64lib.SPRITE_0_Y
 }
+
+#import "_keyboard.asm"
+#import "_utils.asm"
 
 #import "chipset/lib/vic2.asm"
