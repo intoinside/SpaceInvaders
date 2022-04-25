@@ -317,6 +317,28 @@ SetColorToChars: {
   CleanLoop: .byte $03
 }
 
+WaitFor10thSecond: {
+    ldx #0
+  Loop:
+    jsr WaitRoutine
+    inx
+    cpx #50
+    bne Loop
+
+    rts
+}
+
+WaitRoutine: {
+  VBLANKWAITLOW:
+    lda $d011
+    bpl VBLANKWAITLOW
+  VBLANKWAITHIGH:
+    lda $d011
+    bmi VBLANKWAITHIGH
+
+    rts
+}
+
 #import "./_label.asm"
 
 #import "./common/lib/math-global.asm"

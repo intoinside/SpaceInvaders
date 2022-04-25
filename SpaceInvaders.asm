@@ -21,7 +21,7 @@ Entry: {
     MainGameSettings()
 
   !:
-    IsReturnPressedAndReleased()
+    jsr WaitFor10thSecond
 
 // Detect direction, based on current direction and
 // alien position
