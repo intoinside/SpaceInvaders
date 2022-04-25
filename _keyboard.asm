@@ -1,15 +1,3 @@
-////////////////////////////////////////////////////////////////////////////////
-//
-// Project   : DaleksAttack - https://github.com/intoinside/DaleksAttack
-// Target    : Commodore 64
-// Author    : Raffaele Intorcia - raffaele.intorcia@gmail.com
-//
-// Routine for keyboard managing
-//
-// Matrix table reference:
-// https://images.squarespace-cdn.com/content/v1/511651d6e4b0a31c035e30aa/1369219614957-CZ7FU715PJH28C0S3UXN/dustlayer.com-keyboard-matrix-c64.png
-//
-////////////////////////////////////////////////////////////////////////////////
 
 #importonce
 
