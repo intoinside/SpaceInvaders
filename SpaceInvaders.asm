@@ -25,10 +25,13 @@ Entry: {
 
 // Detect direction, based on current direction and
 // alien position
-    DetectDirection(Direction)
+    DetectDirection(Direction, HasSwitched)
+
+// If alien direction has switched, need to go down
+    AliensDescends(HasSwitched)
 
 // Move aliens according to direction
-    MoveAliens(Direction)
+    MoveAliens(Direction, HasSwitched)
 
     jmp !-
 }
@@ -90,6 +93,9 @@ Entry: {
 
 // Current alien direction, 0 means left, 1 means right
 Direction: .byte 0
+
+// Direction has switched, aliens must go down
+HasSwitched: .byte 0
 
 #import "_keyboard.asm"
 #import "_utils.asm"

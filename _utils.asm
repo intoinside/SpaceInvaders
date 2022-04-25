@@ -2,7 +2,7 @@
 #importonce
 
 // Detect if direction must be switched.
-.macro DetectDirection(Direction) {
+.macro DetectDirection(Direction, HasSwitched) {
     lda Direction
     beq GoingLeft
 
@@ -17,6 +17,7 @@
     beq !+
 
   SwitchDirection:
+    inc HasSwitched
     lda Direction
     eor #$ff
     sta Direction
@@ -89,8 +90,24 @@ DetectEdgeReached: {
     CurrentPosition: .word $beef
 }
 
+.macro AliensDescends(HasSwitched) {
+    lda HasSwitched
+    beq !+
+
+    jsr MoveAliensToDown
+
+  !:
+}
+
 // Move aliens according to direction. In accumulator is expected Direction
-.macro MoveAliens(Direction) {
+.macro MoveAliens(Direction, HasSwitched) {
+    lda HasSwitched
+    beq Move
+    
+    dec HasSwitched
+    jmp !+
+
+  Move:
     lda Direction
     beq ToLeft
 
@@ -105,9 +122,65 @@ DetectEdgeReached: {
     jsr SetColorToChars
 }
 
+* = * "MoveAliensToDown"
+MoveAliensToDown: {
+    lda #$42
+    sta CurrentPosition + 1
+    sta NewPosition + 1
+    lda #$d0
+    sta CurrentPosition
+    lda #$f8
+    sta NewPosition
+
+  SetupNewLine:
+    ldx #0
+
+    lda CurrentPosition
+    sta T1 + 1
+    lda CurrentPosition + 1
+    sta T1 + 2
+
+    lda NewPosition
+    sta T2 + 1
+    lda NewPosition + 1
+    sta T2 + 2
+
+  Loop:
+  T1:
+    lda CurrentPosition,x
+
+  T2:
+    sta NewPosition,x
+
+    inx
+    cpx #30
+    bne Loop
+
+// Check if high byte of last row is reached
+    lda CurrentPosition + 1
+    cmp #$40
+    bne CalculateNextRow
+
+// Check if low byte of last row is reached
+    lda CurrentPosition
+    cmp #$00
+    beq Done
+
+  CalculateNextRow:
+    c64lib_sub16($0028, CurrentPosition)
+    c64lib_sub16($0028, NewPosition)
+    jmp SetupNewLine
+
+  Done:
+    rts
+
+    CurrentPosition: .word $beef
+    NewPosition: .word $beef
+}
+
 * = * "MoveAliensToLeft"
 MoveAliensToLeft: {
-    lda #$00
+    lda #$28
     sta CurrentPosition
     lda #$40
     sta CurrentPosition + 1
