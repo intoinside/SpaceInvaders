@@ -53,12 +53,15 @@ MoveAliensToLeft: {
 
 * = * "MoveAliensToRight"
 MoveAliensToRight: {
-    lda #$43
+    lda #$00
+    sta CurrentPosition
+    lda #$40
     sta CurrentPosition + 1
 
-  ResetSelfMod:
-    ldx #254
-    ldy #255
+  SetupNewLine:
+    ldx #30
+    ldy #29
+
     lda CurrentPosition
     sta T1 + 1
     sta T2 + 1
@@ -68,27 +71,33 @@ MoveAliensToRight: {
 
   Loop:
   T1:
-    lda CurrentPosition,x
+    lda CurrentPosition,y
+
   T2:
-    sta CurrentPosition,y
+    sta CurrentPosition,x
 
-    beq NextPosition
-
-  NextPosition:
     dex
     dey
-    beq NextSegment
-    jmp Loop
+    bne Loop
 
-  NextSegment:
-    dec CurrentPosition + 1
+// Check if high byte of last row is reached
     lda CurrentPosition + 1
-    cmp #$3f
-    bne ResetSelfMod
+    cmp #$42
+    bne CalculateNextRow
+
+// Check if low byte of last row is reached
+    lda CurrentPosition
+    cmp #$f8
+    beq Done
+
+  CalculateNextRow:
+    c64lib_add16($0028, CurrentPosition)
+    jmp SetupNewLine
+
   Done:
     rts
 
-    CurrentPosition: .word $be00
+    CurrentPosition: .word $beef
 }
 
 #import "./common/lib/math-global.asm"
