@@ -22,9 +22,13 @@ Entry: {
 
   !:
     IsReturnPressedAndReleased()
-    jsr MoveAliensToLeft
-    // jsr MoveAliensToRight
-    jsr SetColorToChars
+
+// Detect direction, based on current direction and
+// alien position
+    DetectDirection(Direction)
+
+// Move aliens according to direction
+    MoveAliens(Direction)
 
     jmp !-
 }
@@ -57,46 +61,6 @@ Entry: {
     SetupSprites()
 }
 
-* = * "SetColorToChars"
-SetColorToChars: {
-    lda #$04
-    sta CleanLoop
-    lda #0
-    sta StartLoop + 1
-    lda #>MapData
-    sta PaintCols + 2
-    lda #$d8
-    sta ColorMap + 2
-  StartLoop:
-    ldx #$00
-  PaintCols:
-    ldy MapData, x
-    lda CharsetsColors, y
-  ColorMap:
-    sta $d800, x
-    dex
-    bne PaintCols
-
-    inc PaintCols + 2
-    inc ColorMap + 2
-    dec CleanLoop
-    lda CleanLoop
-    beq Done
-    cmp #$01
-    beq SetLastRun
-    jmp StartLoop
-
-  SetLastRun:
-    lda #$e7
-    sta StartLoop + 1
-    jmp StartLoop
-
-  Done:
-    rts
-
-  CleanLoop: .byte $03
-}
-
 .macro SetupSprites() {
     lda #SPRITES.SHOOTER
     sta SPRITES.SPRITES_0
@@ -123,6 +87,9 @@ SetColorToChars: {
     lda #228
     sta c64lib.SPRITE_0_Y
 }
+
+// Current alien direction, 0 means left, 1 means right
+Direction: .byte 0
 
 #import "_keyboard.asm"
 #import "_utils.asm"
