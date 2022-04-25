@@ -21,7 +21,14 @@ Entry: {
     MainGameSettings()
 
   !:
-    jsr WaitFor10thSecond
+// Detect and handle shooter movement
+    jsr Shooter.Move
+    
+// Calculate 10th of second, if delta is < 10th seconds
+// no move on aliens
+    jsr Utils.WaitFor10thSecond
+    lda Utils.WaitFor10thSecond.WaitCounter
+    bne !-
 
 // Detect direction, based on current direction and
 // alien position
@@ -61,34 +68,7 @@ Entry: {
 
     jsr SetColorToChars
 
-    SetupSprites()
-}
-
-.macro SetupSprites() {
-    lda #SPRITES.SHOOTER
-    sta SPRITES.SPRITES_0
-
-    lda #$ff
-    sta c64lib.SPRITE_ENABLE
-    sta c64lib.SPRITE_COL_MODE
-
-    lda #0
-    sta c64lib.SPRITE_MSB_X
-    lda c64lib.SPRITE_EXPAND_X
-    lda c64lib.SPRITE_EXPAND_Y
-
-    lda #BLUE
-    sta c64lib.SPRITE_COL_0
-    lda #WHITE
-    sta c64lib.SPRITE_COL_1
-    
-    lda #GREEN
-    sta c64lib.SPRITE_0_COLOR
-
-    lda #250
-    sta c64lib.SPRITE_0_X
-    lda #228
-    sta c64lib.SPRITE_0_Y
+    jsr Shooter.Init
 }
 
 // Current alien direction, 0 means left, 1 means right
@@ -97,6 +77,7 @@ Direction: .byte 0
 // Direction has switched, aliens must go down
 HasSwitched: .byte 0
 
+#import "_shooter.asm"
 #import "_keyboard.asm"
 #import "_utils.asm"
 

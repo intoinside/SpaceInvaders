@@ -317,15 +317,25 @@ SetColorToChars: {
   CleanLoop: .byte $03
 }
 
-WaitFor10thSecond: {
-    ldx #0
-  Loop:
-    jsr WaitRoutine
-    inx
-    cpx #50
-    bne Loop
+.filenamespace Utils
 
+WaitFor10thSecond: {
+    jsr WaitRoutine
+
+    lda WaitCounter
+    cmp #50
+    beq ResetCounter
+    inc WaitCounter
+    jmp Done
+
+  ResetCounter:
+    lda #0
+    sta WaitCounter
+
+  Done:
     rts
+  
+  WaitCounter: .byte 0
 }
 
 WaitRoutine: {
