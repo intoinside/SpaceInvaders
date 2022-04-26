@@ -34,14 +34,15 @@ Move: {
 
   Right:
     lda c64lib.SPRITE_0_X
+    cmp #248
     beq CheckFire
     inc c64lib.SPRITE_0_X 
     jmp CheckFire
 
   Left:
     lda c64lib.SPRITE_0_X
-    cmp #250
-    bcs CheckFire
+    cmp #24
+    beq CheckFire
     dec c64lib.SPRITE_0_X 
 
   CheckFire:
@@ -89,7 +90,6 @@ Shoot: {
 
     lda #%00000011
     sta c64lib.SPRITE_ENABLE
-    jmp Done
 
   Done:
     rts
