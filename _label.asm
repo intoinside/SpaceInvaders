@@ -29,6 +29,7 @@ SPRITES: {
   .label BULLET = ((Sprites - MapData) / 64) + 1
 
   .label SPRITES_0 = MapData + $3f8
+  .label SPRITES_1 = MapData + $3f9
 }
 
 CIA1: {

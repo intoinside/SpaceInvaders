@@ -23,6 +23,7 @@ Entry: {
   !:
 // Detect and handle shooter movement
     jsr Shooter.Move
+    jsr Shooter.HandleShoot
     
 // Calculate 10th of second, if delta is < 10th seconds
 // no move on aliens
@@ -68,6 +69,7 @@ Entry: {
 
     jsr SetColorToChars
 
+    jsr SpritesCommon.Init
     jsr Shooter.Init
 }
 
@@ -77,6 +79,7 @@ Direction: .byte 0
 // Direction has switched, aliens must go down
 HasSwitched: .byte 0
 
+#import "_sprites.asm"
 #import "_shooter.asm"
 #import "_keyboard.asm"
 #import "_utils.asm"
