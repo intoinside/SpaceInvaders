@@ -34,14 +34,14 @@ Move: {
 
   Right:
     lda c64lib.SPRITE_0_X
-    cmp #248
+    cmp #249
     beq CheckFire
     inc c64lib.SPRITE_0_X 
     jmp CheckFire
 
   Left:
     lda c64lib.SPRITE_0_X
-    cmp #24
+    cmp #28
     beq CheckFire
     dec c64lib.SPRITE_0_X 
 
@@ -60,6 +60,50 @@ HandleShoot: {
     lda IsShooting
     beq Done
 
+    lda c64lib.SPRITE_2B_COLLISION
+    and #%00000010
+    beq MoveBullet
+
+// Calculate screen ram row
+    lda c64lib.SPRITE_1_Y
+    sec
+    sbc #50
+    lsr
+    lsr
+    lsr
+    tax
+    lda ScreenMemTableH, x
+    sta ScreenPositionCollided + 1
+    lda ScreenMemTableL, x
+    sta ScreenPositionCollided
+
+// Calculate screen ram column
+    lda c64lib.SPRITE_1_X
+    sec
+    sbc #23
+    lsr
+    lsr
+    lsr
+    clc
+    adc ScreenPositionCollided
+    sta ScreenPositionCollided
+    lda ScreenPositionCollided + 1
+    adc #0
+    sta ScreenPositionCollided + 1
+
+    lda ScreenPositionCollided
+    sta UpdateScreen + 1
+    lda ScreenPositionCollided + 1
+    sta UpdateScreen + 2
+
+    lda #1
+  UpdateScreen:
+    sta ScreenPositionCollided
+
+// Collision with aliens happened, remove bullet
+    jmp HideBullet
+
+  MoveBullet:
     lda c64lib.SPRITE_1_Y
     sec
     sbc #4
@@ -68,10 +112,21 @@ HandleShoot: {
     cmp #10
     bcs Done
 
+  HideBullet:
     jsr ShootFinished
 
   Done:
     rts
+
+  ScreenPositionCollided: .word $0000
+  Dummy: .word 0
+
+  ScreenMemTableL: .byte $00, $28, $50, $78, $a0, $c8, $f0, $18, $40, $68
+                   .byte $90, $b8, $e0, $08, $30, $58, $80, $a8, $d0, $f8
+                   .byte $20, $48, $70, $98, $c0
+  ScreenMemTableH: .byte $40, $40, $40, $40, $40, $40, $40, $41, $41, $41
+                   .byte $41, $41, $41, $42, $42, $42, $42, $42, $42, $42
+                   .byte $43, $43, $43, $43, $43
 }
 
 * = * "Shooter Shoot"
@@ -83,9 +138,13 @@ Shoot: {
     inc IsShooting
 
     lda c64lib.SPRITE_0_X
+    clc
+    adc #6
     sta c64lib.SPRITE_1_X
 
     lda c64lib.SPRITE_0_Y
+    clc
+    adc #12
     sta c64lib.SPRITE_1_Y
 
     lda #%00000011
@@ -114,4 +173,5 @@ IsShooting: .byte 0
 #import "./_joystick.asm"
 #import "./_label.asm"
 
-#import "chipset/lib/vic2.asm"
+#import "./chipset/lib/vic2.asm"
+#import "./common/lib/math-global.asm"
