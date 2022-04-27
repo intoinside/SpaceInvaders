@@ -58,13 +58,17 @@ Move: {
 * = * "Shooter HandleShoot"
 HandleShoot: {
     lda IsShooting
-    beq Done
+    bne ShootingInProgress
+    jmp Done
 
+  ShootingInProgress:
     lda c64lib.SPRITE_2B_COLLISION
     and #%00000010
-    beq MoveBullet
+    bne CollisionHappened
+    jmp MoveBullet
 
 // Calculate screen ram row
+  CollisionHappened:
     lda c64lib.SPRITE_1_Y
     sec
     sbc #50
@@ -87,9 +91,16 @@ HandleShoot: {
     clc
     adc ScreenPositionCollided
     sta ScreenPositionCollided
+    sta ScreenPositionCollidedPrev
+    sta ScreenPositionCollidedSucc
     lda ScreenPositionCollided + 1
     adc #0
     sta ScreenPositionCollided + 1
+    sta ScreenPositionCollidedPrev + 1
+    sta ScreenPositionCollidedSucc + 1
+
+    c64lib_sub16($0001, ScreenPositionCollidedPrev)
+    c64lib_add16($0001, ScreenPositionCollidedSucc)
 
     lda ScreenPositionCollided
     sta UpdateScreen + 1
@@ -98,6 +109,32 @@ HandleShoot: {
 
     lda #1
   UpdateScreen:
+    sta ScreenPositionCollided
+
+    lda ScreenPositionCollidedPrev
+    sta CheckPrevChar + 1
+    lda ScreenPositionCollidedPrev + 1
+    sta CheckPrevChar + 2
+
+  CheckPrevChar:
+    lda ScreenPositionCollidedPrev
+    beq CheckSucc
+
+    lda ScreenPositionCollidedPrev
+    sta UpdateScreenOtherPiece + 3
+    lda ScreenPositionCollidedPrev + 1
+    sta UpdateScreenOtherPiece + 4
+
+    jmp UpdateScreenOtherPiece
+
+  CheckSucc:  
+    lda ScreenPositionCollidedSucc
+    sta UpdateScreenOtherPiece + 3
+    lda ScreenPositionCollidedSucc + 1
+    sta UpdateScreenOtherPiece + 4
+
+  UpdateScreenOtherPiece:
+    lda #1
     sta ScreenPositionCollided
 
 // Collision with aliens happened, remove bullet
@@ -119,6 +156,8 @@ HandleShoot: {
     rts
 
   ScreenPositionCollided: .word $0000
+  ScreenPositionCollidedPrev: .word $0000
+  ScreenPositionCollidedSucc: .word $0000
   Dummy: .word 0
 
   ScreenMemTableL: .byte $00, $28, $50, $78, $a0, $c8, $f0, $18, $40, $68
