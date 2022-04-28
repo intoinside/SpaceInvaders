@@ -94,6 +94,10 @@ DetectEdgeReached: {
     lda HasSwitched
     beq !+
 
+    lda MoveTick
+    eor $ff
+    sta MoveTick
+
     jsr MoveAliensToDown
 
   !:
@@ -108,6 +112,10 @@ DetectEdgeReached: {
     jmp !+
 
   Move:
+    lda MoveTick
+    eor $ff
+    sta MoveTick
+
     lda Direction
     beq ToLeft
 
@@ -148,6 +156,20 @@ MoveAliensToDown: {
   Loop:
   T1:
     lda CurrentPosition,x
+    beq T2
+    pha
+    lda MoveTick
+    bne Add
+  Sub:
+    pla
+    sec
+    sbc #2
+    jmp T2
+
+  Add:
+    pla
+    clc
+    adc #2
 
   T2:
     sta NewPosition,x
@@ -199,6 +221,20 @@ MoveAliensToLeft: {
   Loop:
   T1:
     lda CurrentPosition,x
+    beq T2
+    pha
+    lda MoveTick
+    bne Add
+  Sub:
+    pla
+    sec
+    sbc #2
+    jmp T2
+
+  Add:
+    pla
+    clc
+    adc #2
 
   T2:
     sta CurrentPosition,y
@@ -249,7 +285,20 @@ MoveAliensToRight: {
   Loop:
   T1:
     lda CurrentPosition,y
+    beq T2
+    pha
+    lda MoveTick
+    bne Add
+  Sub:
+    pla
+    sec
+    sbc #2
+    jmp T2
 
+  Add:
+    pla
+    clc
+    adc #2
   T2:
     sta CurrentPosition,x
 
@@ -316,6 +365,8 @@ SetColorToChars: {
 
   CleanLoop: .byte $03
 }
+
+MoveTick: .byte 0
 
 .filenamespace Utils
 
