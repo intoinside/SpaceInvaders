@@ -22,8 +22,7 @@ Entry: {
 
   !:
 // Detect and handle shooter movement
-    jsr Shooter.Move
-    jsr Shooter.HandleShoot
+    Shooter_Handle()
     
 // Calculate 10th of second, if delta is < 10th seconds
 // no move on aliens

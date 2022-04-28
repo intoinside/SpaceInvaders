@@ -28,8 +28,15 @@ SPRITES: {
   .label SHOOTER = ((Sprites - MapData) / 64)
   .label BULLET = ((Sprites - MapData) / 64) + 1
 
+  .label EXPL_1 = ((Sprites - MapData) / 64) + 2
+  .label EXPL_2 = EXPL_1 + 1
+  .label EXPL_3 = EXPL_1 + 2
+  .label EXPL_4 = EXPL_1 + 3
+  .label EXPL_5 = EXPL_1 + 4
+
   .label SPRITES_0 = MapData + $3f8
   .label SPRITES_1 = MapData + $3f9
+  .label SPRITES_2 = MapData + $3fa
 }
 
 CIA1: {

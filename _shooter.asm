@@ -1,6 +1,14 @@
 
 #importonce
 
+.macro Shooter_Handle() {
+    jsr Shooter.Move
+
+    jsr Shooter.HandleShoot
+
+    jsr Shooter.Explosions
+}
+
 .filenamespace Shooter
 
 * = * "Shooter Init"
@@ -10,10 +18,12 @@ Init: {
     lda #SPRITES.BULLET
     sta SPRITES.SPRITES_1
 
-    lda #GREEN
+    lda #LIGHT_RED
     sta c64lib.SPRITE_0_COLOR
     lda #GREY
     sta c64lib.SPRITE_1_COLOR
+    lda #YELLOW
+    sta c64lib.SPRITE_2_COLOR
 
     lda #125
     sta c64lib.SPRITE_0_X
@@ -34,7 +44,7 @@ Move: {
 
   Right:
     lda c64lib.SPRITE_0_X
-    cmp #249
+    cmp #245
     beq CheckFire
     inc c64lib.SPRITE_0_X 
     jmp CheckFire
@@ -107,7 +117,7 @@ HandleShoot: {
     lda ScreenPositionCollided + 1
     sta UpdateScreen + 2
 
-    lda #1
+    lda #0
   UpdateScreen:
     sta ScreenPositionCollided
 
@@ -134,7 +144,7 @@ HandleShoot: {
     sta UpdateScreenOtherPiece + 4
 
   UpdateScreenOtherPiece:
-    lda #1
+    lda #0
     sta ScreenPositionCollided
 
 // Collision with aliens happened, remove bullet
@@ -151,6 +161,7 @@ HandleShoot: {
 
   HideBullet:
     jsr ShootFinished
+    jsr ShowExplosion
 
   Done:
     rts
@@ -178,7 +189,7 @@ Shoot: {
 
     lda c64lib.SPRITE_0_X
     clc
-    adc #6
+    adc #10
     sta c64lib.SPRITE_1_X
 
     lda c64lib.SPRITE_0_Y
@@ -186,7 +197,8 @@ Shoot: {
     adc #12
     sta c64lib.SPRITE_1_Y
 
-    lda #%00000011
+    lda c64lib.SPRITE_ENABLE
+    ora #%00000010
     sta c64lib.SPRITE_ENABLE
 
   Done:
@@ -198,13 +210,73 @@ ShootFinished: {
     lda IsShooting
     beq Done
 
-    lda #%00000001
+    lda c64lib.SPRITE_ENABLE
+    and #%11111101
     sta c64lib.SPRITE_ENABLE
 
     dec IsShooting
 
   Done:
     rts
+}
+
+* = * "Shooter ShowExplosion"
+ShowExplosion: {
+    lda c64lib.SPRITE_1_X
+    sec
+    sbc #12
+    sta c64lib.SPRITE_2_X
+
+    lda c64lib.SPRITE_1_Y
+    sec
+    sbc #12
+    sta c64lib.SPRITE_2_Y
+    
+    lda #SPRITES.EXPL_1
+    sta SPRITES.SPRITES_2
+
+    lda c64lib.SPRITE_ENABLE
+    ora #%00000100
+    sta c64lib.SPRITE_ENABLE
+
+    rts
+}
+
+* = * "Shooter Explosions"
+Explosions: {
+    lda c64lib.SPRITE_ENABLE
+    and #%00000100
+    beq Done
+
+    lda SPRITES.SPRITES_2
+    cmp #SPRITES.EXPL_5
+    beq HideSprite
+
+    bcc AdvanceFrame
+
+    jmp Done
+    
+  AdvanceFrame:
+    inc DummyWait
+    lda DummyWait
+    cmp #10
+    bne Done
+    inc SPRITES.SPRITES_2
+
+    lda #0
+    sta DummyWait
+
+    jmp Done
+
+  HideSprite:
+    lda c64lib.SPRITE_ENABLE
+    and #%11111011
+    sta c64lib.SPRITE_ENABLE
+
+  Done:
+    rts
+
+  DummyWait: .byte 0
 }
 
 IsShooting: .byte 0

@@ -7,7 +7,7 @@
 Init: {
     lda #%00000001
     sta c64lib.SPRITE_ENABLE
-    lda #%00000011
+    lda #%11111111
     sta c64lib.SPRITE_COL_MODE
 
     lda #0
@@ -15,7 +15,7 @@ Init: {
     lda c64lib.SPRITE_EXPAND_X
     lda c64lib.SPRITE_EXPAND_Y
 
-    lda #BLUE
+    lda #RED
     sta c64lib.SPRITE_COL_0
     lda #WHITE
     sta c64lib.SPRITE_COL_1
