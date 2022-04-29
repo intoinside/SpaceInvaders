@@ -18,9 +18,7 @@
 
   SwitchDirection:
     inc HasSwitched
-    lda Direction
-    eor #$ff
-    sta Direction
+    InvertValue(Direction)
 
   !:
 }
@@ -28,7 +26,7 @@
 // Detect if there is an alien on the first column. Accumulator contains 0 if
 // no alien has been found, 1 otherwise
 .macro DetectLeftEdgeReached() {
-    lda #$00
+    lda #1
     sta DetectEdgeReached.CurrentPosition
 
     jsr DetectEdgeReached
@@ -37,7 +35,7 @@
 // Detect if there is an alien on the last column. Accumulator contains 0 if
 // no alien has been found, 1 otherwise
 .macro DetectRightEdgeReached() {
-    lda #$1d
+    lda #29
     sta DetectEdgeReached.CurrentPosition
 
     jsr DetectEdgeReached
@@ -94,9 +92,7 @@ DetectEdgeReached: {
     lda HasSwitched
     beq !+
 
-    lda MoveTick
-    eor $ff
-    sta MoveTick
+    InvertValue(MoveTick)
 
     jsr MoveAliensToDown
 
@@ -112,9 +108,7 @@ DetectEdgeReached: {
     jmp !+
 
   Move:
-    lda MoveTick
-    eor $ff
-    sta MoveTick
+    InvertValue(MoveTick)
 
     lda Direction
     beq ToLeft
@@ -364,6 +358,12 @@ SetColorToChars: {
     rts
 
   CleanLoop: .byte $03
+}
+
+.macro InvertValue(value) {
+    lda value
+    eor #$ff
+    sta value
 }
 
 MoveTick: .byte 0
