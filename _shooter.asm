@@ -81,7 +81,8 @@ HandleShoot: {
     lda ScreenMemTableL, x
     sta ScreenPositionCollided
 
-// Calculate screen ram column
+// Calculate screen ram column (also calculate prev position and succ position of
+// collided character, needed to explode the entire alien which is 2-char wide)
     lda c64lib.SPRITE_1_X
     sec
     sbc #23
@@ -102,24 +103,31 @@ HandleShoot: {
     c64lib_sub16($0001, ScreenPositionCollidedPrev)
     c64lib_add16($0001, ScreenPositionCollidedSucc)
 
+// Self mod code
     lda ScreenPositionCollided
     sta UpdateScreen + 1
     lda ScreenPositionCollided + 1
     sta UpdateScreen + 2
 
+// Empty char on collided position, check where is the other part of alien
     lda #0
   UpdateScreen:
     sta ScreenPositionCollided
 
+// Self mod code
     lda ScreenPositionCollidedPrev
     sta CheckPrevChar + 1
     lda ScreenPositionCollidedPrev + 1
     sta CheckPrevChar + 2
 
   CheckPrevChar:
+// Load previous collided char
     lda ScreenPositionCollidedPrev
+// Don't do nothing if it's null char and go to check succ character (that will be the
+// other part of the alien)    
     beq CheckSucc
 
+// Prev char is the other part of the alien, prepare self mod code
     lda ScreenPositionCollidedPrev
     sta UpdateScreenOtherPiece + 3
     lda ScreenPositionCollidedPrev + 1
@@ -128,21 +136,25 @@ HandleShoot: {
     jmp UpdateScreenOtherPiece
 
   CheckSucc:  
+// Succ char is the other part of the alien, prepare self mod code
     lda ScreenPositionCollidedSucc
     sta UpdateScreenOtherPiece + 3
     lda ScreenPositionCollidedSucc + 1
     sta UpdateScreenOtherPiece + 4
 
+// Empty the second part of alien
   UpdateScreenOtherPiece:
     lda #0
     sta ScreenPositionCollided
 
+// Start explosion animation
     jsr ShowExplosion
 
 // Collision with aliens happened, remove bullet
     jmp HideBullet
 
   MoveBullet:
+// No collision detect, move bullet to up
     lda c64lib.SPRITE_1_Y
     sec
     sbc #4
