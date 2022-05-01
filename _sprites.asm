@@ -20,7 +20,26 @@ Init: {
     lda #WHITE
     sta c64lib.SPRITE_COL_1
     
+    lda #SPRITES.SHOOTER
+    sta SPRITES.SPRITES_0
+    lda #SPRITES.BULLET
+    sta SPRITES.SPRITES_1
+
+    lda #SPRITES.FREEALIEN_1A
+    sta SPRITES.SPRITES_3
+
+    lda #LIGHT_RED
+    sta c64lib.SPRITE_0_COLOR
+    lda #GREY
+    sta c64lib.SPRITE_1_COLOR
+    lda #YELLOW
+    sta c64lib.SPRITE_2_COLOR
+    lda #LIGHT_GRAY
+    sta c64lib.SPRITE_3_COLOR
+
     rts
 }
+
+#import "./_label.asm"
 
 #import "chipset/lib/vic2.asm"

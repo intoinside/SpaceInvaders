@@ -7,24 +7,14 @@
     jsr Shooter.HandleShoot
 
     jsr Shooter.Explosions
+
+    jsr Shooter.HandleFreeAlien
 }
 
 .filenamespace Shooter
 
 * = * "Shooter Init"
 Init: {
-    lda #SPRITES.SHOOTER
-    sta SPRITES.SPRITES_0
-    lda #SPRITES.BULLET
-    sta SPRITES.SPRITES_1
-
-    lda #LIGHT_RED
-    sta c64lib.SPRITE_0_COLOR
-    lda #GREY
-    sta c64lib.SPRITE_1_COLOR
-    lda #YELLOW
-    sta c64lib.SPRITE_2_COLOR
-
     lda #125
     sta c64lib.SPRITE_0_X
     lda #228
@@ -147,6 +137,8 @@ HandleShoot: {
     lda #0
     sta ScreenPositionCollided
 
+    jsr ShowExplosion
+
 // Collision with aliens happened, remove bullet
     jmp HideBullet
 
@@ -155,13 +147,11 @@ HandleShoot: {
     sec
     sbc #4
     sta c64lib.SPRITE_1_Y
-
     cmp #10
     bcs Done
 
   HideBullet:
     jsr ShootFinished
-    jsr ShowExplosion
 
   Done:
     rts
@@ -239,6 +229,8 @@ ShowExplosion: {
     ora #%00000100
     sta c64lib.SPRITE_ENABLE
 
+    inc ExplosionCounter
+
     rts
 }
 
@@ -279,7 +271,80 @@ Explosions: {
   DummyWait: .byte 0
 }
 
+* = * "Shooter HandleFreeAlien"
+HandleFreeAlien: {
+    lda AlienShowing
+    beq AlienNotAlive
+
+// Alien already on screen, handle it
+    inc c64lib.SPRITE_3_X
+    lda c64lib.SPRITE_3_X
+    cmp #254
+    bcs HideSprite
+
+// Free alien already active, move it
+  CheckSwitch:
+    inc DummyWaitForSwitch
+    lda DummyWaitForSwitch
+    cmp #10
+    bne Done
+
+    lda #0
+    sta DummyWaitForSwitch
+
+    lda SPRITES.SPRITES_3
+    cmp #SPRITES.FREEALIEN_1A
+    bne SwitchBack
+    inc SPRITES.SPRITES_3
+    jmp Done
+
+  SwitchBack:
+    dec SPRITES.SPRITES_3
+    jmp Done
+    
+  AlienNotAlive:
+    lda ExplosionCounter
+    cmp #ExplosionBeforeAlienAppears
+    bcc Done
+
+  StartNewFreeAlien:
+    lda #0
+    sta c64lib.SPRITE_3_X
+    lda #44
+    sta c64lib.SPRITE_3_Y
+
+    lda c64lib.SPRITE_ENABLE
+    ora #%00001000
+    sta c64lib.SPRITE_ENABLE
+
+    inc AlienShowing
+
+    jmp Done
+  
+  HideSprite:
+    lda #0
+    sta ExplosionCounter
+
+    lda c64lib.SPRITE_ENABLE
+    and #%11110111
+    sta c64lib.SPRITE_ENABLE
+
+    dec AlienShowing
+
+  Done:
+    rts
+
+  AlienShowing: .byte 0
+  AlienType: .byte 0
+  DummyWaitForSwitch: .byte 0
+}
+
+// Hold if shoot is in progress
 IsShooting: .byte 0
+
+// Explosion counter before free alien appears
+ExplosionCounter: .byte 0
+.label ExplosionBeforeAlienAppears = 6
 
 #import "./_joystick.asm"
 #import "./_label.asm"

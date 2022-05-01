@@ -34,9 +34,17 @@ SPRITES: {
   .label EXPL_4 = EXPL_1 + 3
   .label EXPL_5 = EXPL_1 + 4
 
+  .label FREEALIEN_1A = ((Sprites - MapData) / 64) + 7
+  .label FREEALIEN_1B = FREEALIEN_1A + 1
+  .label FREEALIEN_2A = ((Sprites - MapData) / 64) + 9
+  .label FREEALIEN_2B = FREEALIEN_2A + 1
+  .label FREEALIEN_3A = ((Sprites - MapData) / 64) + 11
+  .label FREEALIEN_3B = FREEALIEN_3A + 1
+
   .label SPRITES_0 = MapData + $3f8
   .label SPRITES_1 = MapData + $3f9
   .label SPRITES_2 = MapData + $3fa
+  .label SPRITES_3 = MapData + $3fb
 }
 
 CIA1: {
