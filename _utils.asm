@@ -366,6 +366,7 @@ SetColorToChars: {
     sta value
 }
 
+// Used for aliens frame switch
 MoveTick: .byte 0
 
 .filenamespace Utils
