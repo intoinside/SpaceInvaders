@@ -62,8 +62,8 @@ HandleShoot: {
     jmp Done
 
   ShootingInProgress:
-    lda c64lib.SPRITE_2B_COLLISION
-    and #%00000010
+    lda #%00000010
+    bit CollisionBkgDummy     
     bne CollisionHappened
     jmp MoveBullet
 
@@ -75,39 +75,44 @@ HandleShoot: {
     lsr
     lsr
     lsr
-    tax
-    lda ScreenMemTableH, x
-    sta ScreenPositionCollided + 1
-    lda ScreenMemTableL, x
-    sta ScreenPositionCollided
+    sta CalculatedY
 
-// Calculate screen ram column (also calculate prev position and succ position of
-// collided character, needed to explode the entire alien which is 2-char wide)
+    tay
+    lda ScreenMemTableL, y
+    sta ScreenPositionCollided
+    lda ScreenMemTableH, y
+    sta ScreenPositionCollided + 1
+
+// Calculate X
     lda c64lib.SPRITE_1_X
     sec
-    sbc #23
+    sbc #24
     lsr
     lsr
     lsr
-    clc
-    adc ScreenPositionCollided
-    sta ScreenPositionCollided
+    addaccumulatortovar16(ScreenPositionCollided)
+
+// Be sure that collided char is != 0
+    lda ScreenPositionCollided
+    sta CheckChar + 1
+    lda ScreenPositionCollided + 1
+    sta CheckChar + 2
+
+  CheckChar:
+    lda ScreenPositionCollided
+    beq MoveBullet
+    
+    lda ScreenPositionCollided
+    sta UpdateScreen + 1
     sta ScreenPositionCollidedPrev
     sta ScreenPositionCollidedSucc
     lda ScreenPositionCollided + 1
-    adc #0
-    sta ScreenPositionCollided + 1
+    sta UpdateScreen + 2
     sta ScreenPositionCollidedPrev + 1
     sta ScreenPositionCollidedSucc + 1
 
     c64lib_sub16($0001, ScreenPositionCollidedPrev)
     c64lib_add16($0001, ScreenPositionCollidedSucc)
-
-// Self mod code
-    lda ScreenPositionCollided
-    sta UpdateScreen + 1
-    lda ScreenPositionCollided + 1
-    sta UpdateScreen + 2
 
 // Empty char on collided position, check where is the other part of alien
     lda #0
@@ -167,6 +172,8 @@ HandleShoot: {
 
   Done:
     rts
+
+  CalculatedY: .byte 0
 
   ScreenPositionCollided: .word $0000
   ScreenPositionCollidedPrev: .word $0000
@@ -360,6 +367,7 @@ ExplosionCounter: .byte 0
 
 #import "./_joystick.asm"
 #import "./_label.asm"
+#import "./_utils.asm"
 
 #import "./chipset/lib/vic2.asm"
 #import "./common/lib/math-global.asm"

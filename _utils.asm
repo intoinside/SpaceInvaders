@@ -1,6 +1,22 @@
 
 #importonce
 
+CollisionBkgDummy: .byte 0
+
+.macro addaccumulatortovar16(dest) {
+  clc
+  adc dest
+  sta dest
+  lda dest + 1
+  adc #0 //adc value + 1
+  sta dest + 1
+}
+/*
+.assert "add16($0102, $A000) ", { add16($0102, $A000) }, {
+  clc; lda $A000; adc #$02; sta $A000
+  lda $A001; adc #$01; sta $A001
+}*/
+
 // Detect if direction must be switched.
 .macro DetectDirection(Direction, HasSwitched) {
     lda Direction
@@ -150,8 +166,23 @@ MoveAliensToDown: {
   Loop:
   T1:
     lda CurrentPosition,x
+// Current char is blank, copy immediately to new position
     beq T2
+
     pha
+/*
+// Check if current char is a protection
+    cmp #MAP.PROTECTION_OVER
+    bcs HandleTick
+    cmp #MAP.PROTECTION_1
+    bcc HandleTick
+
+    lda #1
+    sta GameOver
+*/
+
+// Handle alien tick to switch frame
+  HandleTick:
     lda MoveTick
     bne Add
   Sub:
@@ -215,8 +246,22 @@ MoveAliensToLeft: {
   Loop:
   T1:
     lda CurrentPosition,x
+// Current char is blank, copy immediately to new position
     beq T2
+
     pha
+/*
+// Check if current char is a protection
+    cmp #MAP.PROTECTION_OVER
+    bcs HandleTick
+    cmp #MAP.PROTECTION_1
+    bcc HandleTick
+
+    lda #1
+    sta GameOver
+*/
+// Handle alien tick to switch frame
+  HandleTick:
     lda MoveTick
     bne Add
   Sub:
@@ -230,6 +275,7 @@ MoveAliensToLeft: {
     clc
     adc #2
 
+// Store character in new position
   T2:
     sta CurrentPosition,y
 
@@ -279,8 +325,22 @@ MoveAliensToRight: {
   Loop:
   T1:
     lda CurrentPosition,y
+// Current char is blank, copy immediately to new position
     beq T2
+
     pha
+/*
+// Check if current char is a protection
+    cmp #MAP.PROTECTION_OVER
+    bcs HandleTick
+    cmp #MAP.PROTECTION_1
+    bcc HandleTick
+
+    lda #1
+    sta GameOver
+*/
+// Handle alien tick to switch frame
+  HandleTick:
     lda MoveTick
     bne Add
   Sub:
@@ -385,6 +445,9 @@ WaitFor10thSecond: {
     sta WaitCounter
 
   Done:
+    lda c64lib.SPRITE_2B_COLLISION
+    sta CollisionBkgDummy
+
     rts
   
   WaitCounter: .byte 0
