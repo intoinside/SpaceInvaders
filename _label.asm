@@ -74,3 +74,6 @@ KEYB: {
   .label BUFFER_LEN         = $0289
   .label REPEAT_SWITCH      = $028a
 }
+
+// 1 means game over
+GameOver: .byte 0

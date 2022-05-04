@@ -2,13 +2,20 @@
 #importonce
 
 .macro Shooter_Handle() {
+    lda GameOver
+    bne !+
+
     jsr Shooter.Move
+
+    jsr Shooter.StillAlive
 
     jsr Shooter.HandleShoot
 
     jsr Shooter.Explosions
 
     jsr Shooter.HandleFreeAlien
+
+  !:
 }
 
 .filenamespace Shooter
@@ -50,6 +57,19 @@ Move: {
     beq Done
 
     jsr Shoot
+
+  Done:
+    rts
+}
+
+* = * "Shooter StillAlive"
+StillAlive: {
+    lda #%00000001
+    bit CollisionBkgDummy
+    beq Done
+
+    lda #1
+    sta GameOver
 
   Done:
     rts

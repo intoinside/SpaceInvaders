@@ -30,6 +30,9 @@ Entry: {
     lda Utils.WaitFor10thSecond.WaitCounter
     bne !-
 
+    lda GameOver
+    bne !-
+
 // Detect direction, based on current direction and
 // alien position
     DetectDirection(Direction, HasSwitched)
