@@ -77,14 +77,12 @@ DetectEdgeReached: {
   NextCheck:
 // Check if high byte of last row is reached
     lda CurrentPosition + 1
-    cmp #$42
-    bcc CalculateNextRow
     cmp #$43
-    bcs NotReached
+    bcc CalculateNextRow
 
 // Check if low byte of last row is reached
     lda CurrentPosition
-    cmp #$f8
+    cmp #$c0
     bcs NotReached
 
   CalculateNextRow:
@@ -141,13 +139,19 @@ DetectEdgeReached: {
 }
 
 * = * "MoveAliensToDown"
+/* Moving aliens to down when edge is reached. Draw starts from bottom and
+ copies line n on n-1 until top is reached. */
 MoveAliensToDown: {
-    lda #$42
+// Source line starts from 23
+    lda #$43
     sta CurrentPosition + 1
-    sta NewPosition + 1
-    lda #$d0
+    lda #$98
     sta CurrentPosition
-    lda #$f8
+
+// Destination line starts from 24
+    lda #$43
+    sta NewPosition + 1
+    lda #$c0
     sta NewPosition
 
   SetupNewLine:
@@ -160,29 +164,63 @@ MoveAliensToDown: {
 
     lda NewPosition
     sta T2 + 1
+    sta TNext + 1
     lda NewPosition + 1
     sta T2 + 2
+    sta TNext + 2
 
   Loop:
   T1:
     lda CurrentPosition,x
-// Current char is blank, copy immediately to new position
-    beq T2
-
-    pha
-/*
-// Check if current char is a protection
+// Check if current char is a protection, should not be copied
     cmp #MAP.PROTECTION_OVER
-    bcs HandleTick
+    bcs NoProtection
     cmp #MAP.PROTECTION_1
-    bcc HandleTick
+    bcc NoProtection
 
-    lda #1
-    sta GameOver
-*/
+// Current char is a protection, skip to next char
+    jmp CheckRowEnded
+
+  NoProtection:
+// Not a protection, check if current char is not an alien
+    cmp #MAP.ALIEN_OVER
+    bcs CheckBlank
+    cmp #MAP.ALIEN_1
+    bcc CheckBlank
+
+// Alien, copy
+    jmp HandleTick
+
+// Not a protection, not an alien, maybe a blank
+  CheckBlank:
+    cmp #0
+    beq IsBlank
+
+    jmp CheckRowEnded
+
+  IsBlank:
+// Current char is blank, should be copied but not on a protection
+    pha
+
+  TNext:
+    lda NewPosition,x
+    cmp #MAP.PROTECTION_OVER
+    bcs BeforeJumpToT2
+    cmp #MAP.PROTECTION_1
+    bcc BeforeJumpToT2
+
+    pla
+
+// Destination char is a protection, skip
+    jmp CheckRowEnded
+
+  BeforeJumpToT2:
+    pla
+    jmp T2
 
 // Handle alien tick to switch frame
   HandleTick:
+    pha
     lda MoveTick
     bne Add
   Sub:
@@ -199,16 +237,17 @@ MoveAliensToDown: {
   T2:
     sta NewPosition,x
 
+  CheckRowEnded:
     inx
     cpx #30
     bne Loop
 
-// Check if high byte of last row is reached
+// Check if HiByte CurrentPosition holds first row
     lda CurrentPosition + 1
     cmp #$40
     bne CalculateNextRow
 
-// Check if low byte of last row is reached
+// Check if LoByte CurrentPosition holds first row
     lda CurrentPosition
     cmp #$00
     beq Done
@@ -226,7 +265,10 @@ MoveAliensToDown: {
 }
 
 * = * "MoveAliensToLeft"
+/* Moving aliens one step to left. Draw starts from top to bottom
+and left to right. */
 MoveAliensToLeft: {
+// Draw starts from line 1 (line 0 is used only for free alien)
     lda #$28
     sta CurrentPosition
     lda #$40
@@ -239,29 +281,64 @@ MoveAliensToLeft: {
     lda CurrentPosition
     sta T1 + 1
     sta T2 + 1
+    sta TNext + 1
     lda CurrentPosition + 1
     sta T1 + 2
     sta T2 + 2
+    sta TNext + 2
 
   Loop:
   T1:
     lda CurrentPosition,x
-// Current char is blank, copy immediately to new position
-    beq T2
-
-    pha
-/*
-// Check if current char is a protection
+// Check if current char is a protection, should not be copied
     cmp #MAP.PROTECTION_OVER
-    bcs HandleTick
+    bcs NoProtection
     cmp #MAP.PROTECTION_1
-    bcc HandleTick
+    bcc NoProtection
 
-    lda #1
-    sta GameOver
-*/
+// Current char is a protection, skip to next char
+    jmp CheckRowEnded
+
+  NoProtection:
+// Not a protection, check if current char is not an alien
+    cmp #MAP.ALIEN_OVER
+    bcs CheckBlank
+    cmp #MAP.ALIEN_1
+    bcc CheckBlank
+
+// Alien, copy
+    jmp HandleTick
+
+// Not a protection, not an alien, maybe a blank
+  CheckBlank:
+    cmp #0
+    beq IsBlank
+
+    jmp CheckRowEnded
+
+  IsBlank:
+// Current char is blank, should be copied but not on a protection
+    pha
+
+  TNext:
+    lda CurrentPosition,y
+    cmp #MAP.PROTECTION_OVER
+    bcs BeforeJumpToT2
+    cmp #MAP.PROTECTION_1
+    bcc BeforeJumpToT2
+
+    pla
+
+// Destination char is a protection, skip
+    jmp CheckRowEnded
+
+  BeforeJumpToT2:
+    pla
+    jmp T2
+
 // Handle alien tick to switch frame
   HandleTick:
+    pha
     lda MoveTick
     bne Add
   Sub:
@@ -279,19 +356,20 @@ MoveAliensToLeft: {
   T2:
     sta CurrentPosition,y
 
+  CheckRowEnded:
     inx
     iny
     cpy #30
     bne Loop
 
-// Check if high byte of last row is reached
+// Check if HiByte CurrentPosition holds last row
     lda CurrentPosition + 1
-    cmp #$42
+    cmp #$43
     bne CalculateNextRow
 
-// Check if low byte of last row is reached
+// Check if LoByte CurrentPosition holds last row
     lda CurrentPosition
-    cmp #$f8
+    cmp #$c0
     beq Done
 
   CalculateNextRow:
@@ -305,42 +383,80 @@ MoveAliensToLeft: {
 }
 
 * = * "MoveAliensToRight"
+/* Moving aliens one step to right. Draw starts from top to bottom
+and right to left. */
 MoveAliensToRight: {
+// Draw starts from line 1 (line 0 is used only for free alien)
     lda #$27
     sta CurrentPosition
     lda #$40
     sta CurrentPosition + 1
 
   SetupNewLine:
-    ldx #30
-    ldy #29
+    ldy #30
+    ldx #29
 
     lda CurrentPosition
     sta T1 + 1
     sta T2 + 1
+    sta TNext + 1
     lda CurrentPosition + 1
     sta T1 + 2
     sta T2 + 2
+    sta TNext + 2
 
   Loop:
   T1:
-    lda CurrentPosition,y
-// Current char is blank, copy immediately to new position
-    beq T2
-
-    pha
-/*
-// Check if current char is a protection
+    lda CurrentPosition,x
+// Check if current char is a protection, should not be copied
     cmp #MAP.PROTECTION_OVER
-    bcs HandleTick
+    bcs NoProtection
     cmp #MAP.PROTECTION_1
-    bcc HandleTick
+    bcc NoProtection
 
-    lda #1
-    sta GameOver
-*/
+// Current char is a protection, skip to next char
+    jmp CheckRowEnded
+
+  NoProtection:
+// Not a protection, check if current char is not an alien
+    cmp #MAP.ALIEN_OVER
+    bcs CheckBlank
+    cmp #MAP.ALIEN_1
+    bcc CheckBlank
+
+// Alien, copy
+    jmp HandleTick
+
+// Not a protection, not an alien, maybe a blank
+  CheckBlank:
+    cmp #0
+    beq IsBlank
+
+    jmp CheckRowEnded
+
+  IsBlank:
+// Current char is blank, should be copied but not on a protection
+    pha
+
+  TNext:
+    lda CurrentPosition,y
+    cmp #MAP.PROTECTION_OVER
+    bcs BeforeJumpToT2
+    cmp #MAP.PROTECTION_1
+    bcc BeforeJumpToT2
+
+    pla
+
+// Destination char is a protection, skip
+    jmp CheckRowEnded
+
+  BeforeJumpToT2:
+    pla
+    jmp T2
+
 // Handle alien tick to switch frame
   HandleTick:
+    pha
     lda MoveTick
     bne Add
   Sub:
@@ -353,22 +469,25 @@ MoveAliensToRight: {
     pla
     clc
     adc #2
-  T2:
-    sta CurrentPosition,x
 
-    dey
+// Store character in new position
+  T2:
+    sta CurrentPosition,y
+
+  CheckRowEnded:
     dex
+    dey
     bne Loop
 
-// Check if high byte of last row is reached
+// Check if HiByte CurrentPosition holds last row
     lda CurrentPosition + 1
-    cmp #$42
+    cmp #$43
     bne CalculateNextRow
 
-// Check if low byte of last row is reached
+// Check if LoByte CurrentPosition holds last row
     lda CurrentPosition
-    cmp #$f0
-    bcs Done
+    cmp #$bf
+    beq Done
 
   CalculateNextRow:
     c64lib_add16($0028, CurrentPosition)

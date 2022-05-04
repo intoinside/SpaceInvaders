@@ -24,6 +24,17 @@ CharsetsColors:
 Sprites:
   .import binary "./assets/sprites.bin"
 
+MAP: {
+  .label PROTECTION_1 = 69
+
+  .label PROTECTION_LAST = PROTECTION_1 + 4
+  .label PROTECTION_OVER = PROTECTION_LAST + 1
+
+  .label ALIEN_1 = 37
+  .label ALIEN_LAST = ALIEN_1 + 31
+  .label ALIEN_OVER = ALIEN_LAST + 1
+}
+
 SPRITES: {
   .label SHOOTER = ((Sprites - MapData) / 64)
   .label BULLET = ((Sprites - MapData) / 64) + 1
