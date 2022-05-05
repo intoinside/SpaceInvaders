@@ -63,6 +63,7 @@ Move: {
 }
 
 * = * "Shooter StillAlive"
+/* Check if shooter is still alive by looking at collision with alien */
 StillAlive: {
     lda #%00000001
     bit CollisionBkgDummy
@@ -269,6 +270,7 @@ ShowExplosion: {
     sta c64lib.SPRITE_ENABLE
 
     inc ExplosionCounter
+    dec Aliens.Count
 
     rts
 }
@@ -385,6 +387,7 @@ IsShooting: .byte 0
 ExplosionCounter: .byte 0
 .label ExplosionBeforeAlienAppears = 6
 
+#import "./_aliens.asm"
 #import "./_joystick.asm"
 #import "./_label.asm"
 #import "./_utils.asm"

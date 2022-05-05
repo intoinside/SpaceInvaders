@@ -73,6 +73,7 @@ Entry: {
 
     jsr SpritesCommon.Init
     jsr Shooter.Init
+    jsr Aliens.Init
 }
 
 // Current alien direction, 0 means left, 1 means right
@@ -81,6 +82,7 @@ Direction: .byte 0
 // Direction has switched, aliens must go down
 HasSwitched: .byte 0
 
+#import "_aliens.asm"
 #import "_sprites.asm"
 #import "_shooter.asm"
 #import "_keyboard.asm"
