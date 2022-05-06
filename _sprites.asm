@@ -34,6 +34,7 @@ Init: {
     sta c64lib.SPRITE_1_COLOR
     lda #YELLOW
     sta c64lib.SPRITE_2_COLOR
+    sta c64lib.SPRITE_4_COLOR
     lda #LIGHT_GRAY
     sta c64lib.SPRITE_3_COLOR
 

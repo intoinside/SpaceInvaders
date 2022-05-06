@@ -39,23 +39,29 @@ SPRITES: {
   .label SHOOTER = ((Sprites - MapData) / 64)
   .label BULLET = ((Sprites - MapData) / 64) + 1
 
-  .label EXPL_1 = ((Sprites - MapData) / 64) + 2
+  .label ALIEN_BULLET = ((Sprites - MapData) / 64) + 2
+
+  .label EXPL_1 = ((Sprites - MapData) / 64) + 3
   .label EXPL_2 = EXPL_1 + 1
   .label EXPL_3 = EXPL_1 + 2
   .label EXPL_4 = EXPL_1 + 3
   .label EXPL_5 = EXPL_1 + 4
 
-  .label FREEALIEN_1A = ((Sprites - MapData) / 64) + 7
+  .label FREEALIEN_1A = ((Sprites - MapData) / 64) + 8
   .label FREEALIEN_1B = FREEALIEN_1A + 1
-  .label FREEALIEN_2A = ((Sprites - MapData) / 64) + 9
+  .label FREEALIEN_2A = ((Sprites - MapData) / 64) + 10
   .label FREEALIEN_2B = FREEALIEN_2A + 1
-  .label FREEALIEN_3A = ((Sprites - MapData) / 64) + 11
+  .label FREEALIEN_3A = ((Sprites - MapData) / 64) + 12
   .label FREEALIEN_3B = FREEALIEN_3A + 1
 
   .label SPRITES_0 = MapData + $3f8
   .label SPRITES_1 = MapData + $3f9
   .label SPRITES_2 = MapData + $3fa
   .label SPRITES_3 = MapData + $3fb
+  .label SPRITES_4 = MapData + $3fc
+  .label SPRITES_5 = MapData + $3fd
+  .label SPRITES_6 = MapData + $3fe
+  .label SPRITES_7 = MapData + $3ff
 }
 
 CIA1: {

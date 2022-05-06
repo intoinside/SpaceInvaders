@@ -24,15 +24,24 @@ Entry: {
 // Detect and handle shooter movement
     Shooter_Handle()
     
+    lda GameOver
+    bne !-
+
+    //GetRandomNumberInRange(1, 500)
+    lda #0
+    cmp #10
+    bcs MoveAlienBlock
+
+// Alien have to shoot
+    jsr Aliens.Shoot
+
 // Calculate 10th of second, if delta is < 10th seconds
 // no move on aliens
     jsr Utils.WaitFor10thSecond
     lda Utils.WaitFor10thSecond.WaitCounter
     bne !-
 
-    lda GameOver
-    bne !-
-
+  MoveAlienBlock:
 // Detect direction, based on current direction and
 // alien position
     DetectDirection(Direction, HasSwitched)
