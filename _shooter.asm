@@ -200,13 +200,6 @@ HandleShoot: {
   ScreenPositionCollidedPrev: .word $0000
   ScreenPositionCollidedSucc: .word $0000
   Dummy: .word 0
-
-  ScreenMemTableL: .byte $00, $28, $50, $78, $a0, $c8, $f0, $18, $40, $68
-                   .byte $90, $b8, $e0, $08, $30, $58, $80, $a8, $d0, $f8
-                   .byte $20, $48, $70, $98, $c0
-  ScreenMemTableH: .byte $40, $40, $40, $40, $40, $40, $40, $41, $41, $41
-                   .byte $41, $41, $41, $42, $42, $42, $42, $42, $42, $42
-                   .byte $43, $43, $43, $43, $43
 }
 
 * = * "Shooter Shoot"

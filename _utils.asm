@@ -178,8 +178,9 @@ MoveAliensToDown: {
     cmp #MAP.PROTECTION_1
     bcc NoProtection
 
-// Current char is a protection, skip to next char
-    jmp CheckRowEnded
+// Current char is a protection, copy a blank char
+    lda #0
+    jmp IsBlank
 
   NoProtection:
 // Not a protection, check if current char is not an alien
@@ -249,7 +250,7 @@ MoveAliensToDown: {
 
 // Check if LoByte CurrentPosition holds first row
     lda CurrentPosition
-    cmp #$00
+    cmp #$28
     beq Done
 
   CalculateNextRow:
@@ -269,12 +270,15 @@ MoveAliensToDown: {
 and left to right. */
 MoveAliensToLeft: {
 // Draw starts from line 1 (line 0 is used only for free alien)
-    lda #$28
+    lda #$50
     sta CurrentPosition
     lda #$40
     sta CurrentPosition + 1
 
   SetupNewLine:
+    lda #0
+    sta RowWithAliensFound
+
     ldx #1
     ldy #0
 
@@ -290,14 +294,16 @@ MoveAliensToLeft: {
   Loop:
   T1:
     lda CurrentPosition,x
+
 // Check if current char is a protection, should not be copied
     cmp #MAP.PROTECTION_OVER
     bcs NoProtection
     cmp #MAP.PROTECTION_1
     bcc NoProtection
 
-// Current char is a protection, skip to next char
-    jmp CheckRowEnded
+// Current char is a protection, copy a blank char
+    lda #0
+    jmp IsBlank
 
   NoProtection:
 // Not a protection, check if current char is not an alien
@@ -307,6 +313,8 @@ MoveAliensToLeft: {
     bcc CheckBlank
 
 // Alien, copy
+    inc RowWithAliensFound
+
     jmp HandleTick
 
 // Not a protection, not an alien, maybe a blank
@@ -373,6 +381,19 @@ MoveAliensToLeft: {
     beq Done
 
   CalculateNextRow:
+    lda RowWithAliensFound
+    beq NextLine
+
+    lda #0
+    sta RowsWithoutElements
+
+    c64lib_add16($0050, CurrentPosition)
+    jmp SetupNewLine
+
+  NextLine:
+    inc RowsWithoutElements
+    lda RowsWithoutElements
+    cmp #2
     c64lib_add16($0028, CurrentPosition)
     jmp SetupNewLine
 
@@ -380,19 +401,24 @@ MoveAliensToLeft: {
     rts
 
     CurrentPosition: .word $beef
+    RowWithAliensFound: .byte 0
+    RowsWithoutElements: .byte 0
 }
 
 * = * "MoveAliensToRight"
 /* Moving aliens one step to right. Draw starts from top to bottom
 and right to left. */
 MoveAliensToRight: {
-// Draw starts from line 1 (line 0 is used only for free alien)
-    lda #$27
+// Draw starts from line 2 (line 0 is used only for free alien)
+    lda #$4f
     sta CurrentPosition
     lda #$40
     sta CurrentPosition + 1
 
   SetupNewLine:
+    lda #0
+    sta RowWithAliensFound
+
     ldy #30
     ldx #29
 
@@ -408,14 +434,16 @@ MoveAliensToRight: {
   Loop:
   T1:
     lda CurrentPosition,x
+
 // Check if current char is a protection, should not be copied
     cmp #MAP.PROTECTION_OVER
     bcs NoProtection
     cmp #MAP.PROTECTION_1
     bcc NoProtection
 
-// Current char is a protection, skip to next char
-    jmp CheckRowEnded
+// Current char is a protection, copy a blank char
+    lda #0
+    jmp IsBlank
 
   NoProtection:
 // Not a protection, check if current char is not an alien
@@ -425,6 +453,7 @@ MoveAliensToRight: {
     bcc CheckBlank
 
 // Alien, copy
+    inc RowWithAliensFound
     jmp HandleTick
 
 // Not a protection, not an alien, maybe a blank
@@ -490,6 +519,20 @@ MoveAliensToRight: {
     beq Done
 
   CalculateNextRow:
+    lda RowWithAliensFound
+    beq NextLine
+
+    lda #0
+    sta RowsWithoutElements
+
+    c64lib_add16($0050, CurrentPosition)
+    jmp SetupNewLine
+
+  NextLine:
+    inc RowsWithoutElements
+    lda RowsWithoutElements
+    cmp #2
+    beq Done
     c64lib_add16($0028, CurrentPosition)
     jmp SetupNewLine
 
@@ -497,6 +540,8 @@ MoveAliensToRight: {
     rts
 
     CurrentPosition: .word $beef
+    RowWithAliensFound: .byte 0
+    RowsWithoutElements: .byte 0
 }
 
 * = * "SetColorToChars"
