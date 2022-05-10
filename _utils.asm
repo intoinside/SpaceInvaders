@@ -114,8 +114,6 @@ DetectEdgeReached: {
     lda HasSwitched
     beq !+
 
-    InvertValue(MoveTick)
-
     jsr MoveAliensToDown
 
   !:
@@ -130,8 +128,6 @@ DetectEdgeReached: {
     jmp !+
 
   Move:
-    InvertValue(MoveTick)
-
     lda Direction
     beq ToLeft
 
@@ -150,15 +146,12 @@ DetectEdgeReached: {
 /* Moving aliens to down when edge is reached. Draw starts from bottom and
  copies line n on n-1 until top is reached. */
 MoveAliensToDown: {
-// Source line starts from 23
+// Source line starts from 23, destination line starts from 24
     lda #$43
     sta CurrentPosition + 1
+    sta NewPosition + 1
     lda #$98
     sta CurrentPosition
-
-// Destination line starts from 24
-    lda #$43
-    sta NewPosition + 1
     lda #$c0
     sta NewPosition
 
@@ -243,6 +236,7 @@ MoveAliensToDown: {
     clc
     adc #2
 
+// Store character in new position
   T2:
     sta NewPosition,x
 
@@ -278,17 +272,16 @@ MoveAliensToDown: {
 and left to right. */
 MoveAliensToLeft: {
 // Draw starts from line 1 (line 0 is used only for free alien)
-    lda #$50
+    lda #$28
     sta CurrentPosition
     lda #$40
     sta CurrentPosition + 1
 
   SetupNewLine:
-    lda #0
-    sta RowWithAliensFound
-
     ldx #1
     ldy #0
+    sty RowWithAliensFound
+    sty RowsWithoutElements
 
     lda CurrentPosition
     sta T1 + 1
@@ -402,6 +395,7 @@ MoveAliensToLeft: {
     inc RowsWithoutElements
     lda RowsWithoutElements
     cmp #2
+    beq Done
     c64lib_add16($0028, CurrentPosition)
     jmp SetupNewLine
 
@@ -417,8 +411,8 @@ MoveAliensToLeft: {
 /* Moving aliens one step to right. Draw starts from top to bottom
 and right to left. */
 MoveAliensToRight: {
-// Draw starts from line 2 (line 0 is used only for free alien)
-    lda #$4f
+// Draw starts from line 1 (line 0 is used only for free alien)
+    lda #$27
     sta CurrentPosition
     lda #$40
     sta CurrentPosition + 1
@@ -426,6 +420,7 @@ MoveAliensToRight: {
   SetupNewLine:
     lda #0
     sta RowWithAliensFound
+    sta RowsWithoutElements
 
     ldy #30
     ldx #29
@@ -462,6 +457,7 @@ MoveAliensToRight: {
 
 // Alien, copy
     inc RowWithAliensFound
+
     jmp HandleTick
 
 // Not a protection, not an alien, maybe a blank
@@ -512,8 +508,8 @@ MoveAliensToRight: {
     sta CurrentPosition,y
 
   CheckRowEnded:
-    dex
     dey
+    dex
     bne Loop
 
 // Check if HiByte CurrentPosition holds last row

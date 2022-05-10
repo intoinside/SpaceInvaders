@@ -42,6 +42,8 @@ Entry: {
     bne !-
 
   MoveAlienBlock:
+    InvertValue(MoveTick)
+    
 // Detect direction, based on current direction and
 // alien position
     DetectDirection(Direction, HasSwitched)
