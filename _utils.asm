@@ -374,22 +374,12 @@ MoveAliensToLeft: {
 // Check if HiByte CurrentPosition holds last row
     lda CurrentPosition + 1
     cmp #$43
-    bne CalculateNextRow
+    bne NextLine
 
 // Check if LoByte CurrentPosition holds last row
     lda CurrentPosition
     cmp #$c0
     beq Done
-
-  CalculateNextRow:
-    lda RowWithAliensFound
-    beq NextLine
-
-    lda #0
-    sta RowsWithoutElements
-
-    c64lib_add16($0050, CurrentPosition)
-    jmp SetupNewLine
 
   NextLine:
     inc RowsWithoutElements
@@ -515,22 +505,12 @@ MoveAliensToRight: {
 // Check if HiByte CurrentPosition holds last row
     lda CurrentPosition + 1
     cmp #$43
-    bne CalculateNextRow
+    bne NextLine
 
 // Check if LoByte CurrentPosition holds last row
     lda CurrentPosition
     cmp #$bf
     beq Done
-
-  CalculateNextRow:
-    lda RowWithAliensFound
-    beq NextLine
-
-    lda #0
-    sta RowsWithoutElements
-
-    c64lib_add16($0050, CurrentPosition)
-    jmp SetupNewLine
 
   NextLine:
     inc RowsWithoutElements
