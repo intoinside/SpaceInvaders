@@ -187,7 +187,7 @@ HandleShoot: {
     sec
     sbc #4
     sta c64lib.SPRITE_1_Y
-    cmp #10
+    cmp #20
     bcs Done
 
   HideBullet:
