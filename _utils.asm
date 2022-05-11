@@ -1,7 +1,11 @@
 
 #importonce
 
+// Holder for background collision
 CollisionBkgDummy: .byte 0
+
+// Holder for sprite collision
+CollisionSprDummy: .byte 0
 
 .macro GetRandomNumberInRange(minNumber, maxNumber) {
     lda #minNumber
@@ -595,6 +599,9 @@ WaitFor10thSecond: {
   Done:
     lda c64lib.SPRITE_2B_COLLISION
     sta CollisionBkgDummy
+
+    lda c64lib.SPRITE_2S_COLLISION
+    sta CollisionSprDummy
 
     rts
   

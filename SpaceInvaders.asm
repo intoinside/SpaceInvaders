@@ -23,6 +23,7 @@ Entry: {
   !:
 // Detect and handle shooter movement
     Shooter_Handle()
+    Aliens_Handle()
     
     lda GameOver
     bne !-

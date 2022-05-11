@@ -1,3 +1,12 @@
+/***************************************************
+Sprite recap
+0: shooter
+1: shooter bullet
+2: shooter bullet explosion
+3: free alien on top
+4: alien bullet
+5: alien bullet explosion
+****************************************************/
 
 #importonce
 
@@ -35,6 +44,7 @@ Init: {
     lda #YELLOW
     sta c64lib.SPRITE_2_COLOR
     sta c64lib.SPRITE_4_COLOR
+    sta c64lib.SPRITE_5_COLOR
     lda #LIGHT_GRAY
     sta c64lib.SPRITE_3_COLOR
 

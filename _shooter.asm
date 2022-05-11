@@ -15,8 +15,6 @@
 
     jsr Shooter.HandleFreeAlien
 
-    jsr Aliens.HandleShoot
-
   !:
 }
 

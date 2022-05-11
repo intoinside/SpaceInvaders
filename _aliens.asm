@@ -1,6 +1,17 @@
 
 #importonce
 
+.macro Aliens_Handle() {
+    lda GameOver
+    bne !+
+
+    jsr Aliens.HandleShoot
+
+    jsr Aliens.Explosions
+
+  !:
+}
+
 .filenamespace Aliens
 
 // Alien count, determined at start and updated when and alien is destroyed
@@ -169,15 +180,28 @@ Shoot: {
     Found: .byte 0
 }
 
+* = * "Aliens HandleShoot"
+/* Handle alien shoot, check collision with background and shooter,
+moves alien bullet. */
 HandleShoot: {
     lda IsShooting
-    beq Done
+    bne ShootingInProgress
+    jmp Done
 
   ShootingInProgress:
-    lda #%00010000
-    bit CollisionBkgDummy     
-    bne CollisionHappened
-    jmp MoveBullet
+// Check if alien bullet hit something on background
+    lda CollisionBkgDummy
+    cmp #%00010000
+    beq CollisionHappened
+
+// Check if alien bullet hit shooter
+    lda CollisionSprDummy
+    cmp #%00010001
+    bne MoveBullet
+
+    lda #1
+    sta GameOver
+    jmp HideBullet
 
 // Calculate screen ram row
   CollisionHappened:
@@ -231,7 +255,7 @@ HandleShoot: {
     jmp HideBullet
 
   MoveBullet:
-// No collision detect, move bullet to up
+// No collision detect, move bullet to down
     lda c64lib.SPRITE_4_Y
     clc
     adc #2
@@ -270,21 +294,58 @@ ShowExplosion: {
     lda c64lib.SPRITE_4_X
     sec
     sbc #12
-    sta c64lib.SPRITE_2_X
+    sta c64lib.SPRITE_5_X
 
     lda c64lib.SPRITE_4_Y
     sec
     sbc #12
-    sta c64lib.SPRITE_2_Y
+    sta c64lib.SPRITE_5_Y
     
     lda #SPRITES.EXPL_1
-    sta SPRITES.SPRITES_4
+    sta SPRITES.SPRITES_5
 
     lda c64lib.SPRITE_ENABLE
-    ora #%00010000
+    ora #%00100000
     sta c64lib.SPRITE_ENABLE
 
     rts
+}
+
+* = * "Aliens Explosions"
+Explosions: {
+    lda c64lib.SPRITE_ENABLE
+    and #%00100000
+    beq Done
+
+    lda SPRITES.SPRITES_5
+    cmp #SPRITES.EXPL_5
+    beq HideSprite
+
+    bcc AdvanceFrame
+
+    jmp Done
+    
+  AdvanceFrame:
+    inc DummyWait
+    lda DummyWait
+    cmp #10
+    bne Done
+    inc SPRITES.SPRITES_5
+
+    lda #0
+    sta DummyWait
+
+    jmp Done
+
+  HideSprite:
+    lda c64lib.SPRITE_ENABLE
+    and #%11011111
+    sta c64lib.SPRITE_ENABLE
+
+  Done:
+    rts
+
+  DummyWait: .byte 0
 }
 
 #import "./_label.asm"
