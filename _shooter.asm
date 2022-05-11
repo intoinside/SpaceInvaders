@@ -122,6 +122,8 @@ HandleShoot: {
   CheckChar:
     lda ScreenPositionCollided
     beq MoveBullet
+
+    jsr AddPointsForAliens
     
     lda ScreenPositionCollided
     sta UpdateScreen + 1
@@ -373,6 +375,14 @@ HandleFreeAlien: {
   DummyWaitForSwitch: .byte 0
 }
 
+* = * "Shooter AddPointsForAliens"
+AddPointsForAliens: {
+  AddPoints(0, 0, 0, 1)
+
+  Done:
+    rts
+}
+
 // Hold if shoot is in progress
 IsShooting: .byte 0
 
@@ -384,6 +394,7 @@ ExplosionCounter: .byte 0
 #import "./_joystick.asm"
 #import "./_label.asm"
 #import "./_utils.asm"
+#import "./_hud.asm"
 
 #import "./chipset/lib/vic2.asm"
 #import "./common/lib/math-global.asm"
