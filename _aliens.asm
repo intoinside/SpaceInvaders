@@ -117,8 +117,7 @@ Shoot: {
 
   AlienFound:
     inc Found
-    //GetRandomNumberInRange(1, 3)
-    lda #1
+    GetRandomNumberInRange(1, 5)
     cmp #2
     bcs CheckRowEnded
 

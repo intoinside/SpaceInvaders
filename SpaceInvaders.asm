@@ -20,6 +20,8 @@ Entry: {
     IsReturnPressedAndReleased()
     MainGameSettings()
 
+    NewGameSettings()
+
   !:
 // Detect and handle shooter movement
     Shooter_Handle()
@@ -28,14 +30,15 @@ Entry: {
     lda GameOver
     bne !-
 
-    //GetRandomNumberInRange(1, 500)
-    lda #0
-    cmp #10
-    bcs MoveAlienBlock
+    GetRandomNumberInRange(1, 250)
+    cmp #238
+    bcc WaitForNewMovement
 
+  Shoot:
 // Alien have to shoot
     jsr Aliens.Shoot
 
+  WaitForNewMovement:
 // Calculate 10th of second, if delta is < 10th seconds
 // no move on aliens
     jsr Utils.WaitFor10thSecond
@@ -86,6 +89,14 @@ Entry: {
     jsr SpritesCommon.Init
     jsr Shooter.Init
     jsr Aliens.Init
+}
+
+.macro NewGameSettings() {
+    lda #27
+    sta Hud.ScoreLabel
+    sta Hud.ScoreLabel + 1
+    sta Hud.ScoreLabel + 2
+    sta Hud.ScoreLabel + 3
 }
 
 // Current alien direction, 0 means left, 1 means right
