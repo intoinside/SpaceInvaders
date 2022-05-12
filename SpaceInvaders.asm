@@ -20,6 +20,8 @@ Entry: {
     IsReturnPressedAndReleased()
     MainGameSettings()
 
+    CopyScreenRam(MapData, MapDummyArea)
+
     NewGameSettings()
 
   !:
@@ -97,6 +99,8 @@ Entry: {
     sta Hud.ScoreLabel + 1
     sta Hud.ScoreLabel + 2
     sta Hud.ScoreLabel + 3
+
+    CopyScreenRam(MapDummyArea, MapData)
 }
 
 // Current alien direction, 0 means left, 1 means right
