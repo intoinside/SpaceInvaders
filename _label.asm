@@ -31,6 +31,10 @@ MAP: {
   .label PROTECTION_OVER = PROTECTION_LAST + 1
 
   .label ALIEN_1 = 37
+  .label ALIEN_2 = 41
+  .label ALIEN_3 = 45
+  .label ALIEN_4 = 49
+  .label ALIEN_5 = 53
   .label ALIEN_LAST = ALIEN_1 + 31
   .label ALIEN_OVER = ALIEN_LAST + 1
 }
