@@ -377,9 +377,50 @@ HandleFreeAlien: {
 
 * = * "Shooter AddPointsForAliens"
 AddPointsForAliens: {
-  AddPoints(0, 0, 0, 1)
+    pha
+    cmp #MAP.ALIEN_1
+    bcc DoneFar
+    cmp #MAP.ALIEN_1 + 4
+    bcs !+
+    AddPoints(0, 2, 5)
+    jmp Done
+
+  DoneFar:
+    jmp Done
+    
+  !:
+    cmp #MAP.ALIEN_2
+    bcc Done
+    cmp #MAP.ALIEN_2 + 4
+    bcs !+
+    AddPoints(0, 2, 0)
+    jmp Done
+
+  !:
+    cmp #MAP.ALIEN_3
+    bcc Done
+    cmp #MAP.ALIEN_3 + 4
+    bcs !+
+    AddPoints(0, 1, 5)
+    jmp Done
+
+  !:
+    cmp #MAP.ALIEN_4
+    bcc Done
+    cmp #MAP.ALIEN_4 + 4
+    bcs !+
+    AddPoints(0, 1, 0)
+    jmp Done
+
+  !:
+    cmp #MAP.ALIEN_5
+    bcc Done
+    cmp #MAP.ALIEN_5 + 4
+    bcs Done
+    AddPoints(0, 0, 5)
 
   Done:
+    pla
     rts
 }
 

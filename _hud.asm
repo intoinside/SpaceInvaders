@@ -2,16 +2,18 @@
 #importonce
 
 // Add points to current score
-.macro AddPoints(digit4, digit3, digit2, digit1) {
+//.macro AddPoints(digit4, digit3, digit2, digit1) {
+.macro AddPoints(digit3, digit2, digit1) {
     lda #digit1
-    sta Hud.AddScore.Points + 3
-    lda #digit2
     sta Hud.AddScore.Points + 2
-    lda #digit3
+    lda #digit2
     sta Hud.AddScore.Points + 1
+    lda #digit3
+    sta Hud.AddScore.Points
+/*
     lda #digit4
     sta Hud.AddScore.Points
-
+*/
     jsr Hud.AddScore
 }
 
@@ -19,10 +21,10 @@
 
 * = * "Hud AddScore"
 AddScore: {
-    ldx #4
+    ldx #3
     clc
   !:
-    lda CurrentScore - 1, x
+    lda CurrentScore, x
     adc Points - 1, x
     cmp #10
     bcc SaveDigit
@@ -30,14 +32,14 @@ AddScore: {
     sec
 
   SaveDigit:
-    sta CurrentScore - 1, x
+    sta CurrentScore, x
     dex
     bne !-
 
   Done:
     jmp DrawScore   // jsr + rts
 
-  Points: .byte $00, $00, $00, $00
+  Points: .byte $00, $00, $00
 }
 
 * = * "Hud ResetScore"
