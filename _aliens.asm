@@ -5,6 +5,8 @@
     lda GameOver
     bne !+
 
+    jsr Aliens.Shoot
+
     jsr Aliens.HandleShoot
 
     jsr Aliens.Explosions
@@ -88,6 +90,13 @@ Shoot: {
     jmp Done
 
   !:
+    GetRandomNumberInRange(1, 250)
+    cmp #238
+    bcc StartShootHandle
+
+    jmp Done
+
+  StartShootHandle:
     lda #0
     sta Found
 
@@ -137,7 +146,7 @@ Shoot: {
     asl
     asl
     clc
-    adc #56
+    adc #60
     sta c64lib.SPRITE_4_Y
 
     lda #SPRITES.ALIEN_BULLET

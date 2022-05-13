@@ -24,43 +24,109 @@ Entry: {
 
     NewGameSettings()
 
+    SetIrqRaster(0)
+
+    jmp *
+}
+
+WaitFrame: .byte 0
+
+.macro SetIrqRaster(line) {
+    sei
+    lda #%01111111
+    sta $dc0d
+    and $d011
+    sta $d011
+
+    lda $dc0d
+    lda $dd0d
+
+    lda #0
+    sta $d012
+
+    lda #<Irq
+    sta $0314
+    lda #>Irq
+    sta $0315
+
+    lda #%00000001
+    sta $d01a
+
+    cli
+}
+
+Irq: {
+    lda c64lib.SPRITE_2B_COLLISION
+    sta CollisionBkgDummy
+
+    lda c64lib.SPRITE_2S_COLLISION
+    sta CollisionSprDummy
+
+    jsr ScanLineZero
+
+    lda WaitCounter
+    cmp #40
+    beq On40Th
+    cmp #50
+    beq On50Th
+    inc WaitCounter
+    jmp Done
+
+  On40Th:
+    jsr Scan40thSecond
+
+  On50Th:
+    jsr Scan50thSecond
+    lda #0
+    sta WaitCounter
+
+  Done:
+    asl $d019
+    jmp $ea31
+
+  WaitCounter: .byte 1
+}
+
+ScanLineZero: {
+    lda GameOver
+    beq !+
+    rts
+
   !:
-// Detect and handle shooter movement
     Shooter_Handle()
     Aliens_Handle()
-    
+
+    rts
+}
+
+Scan40thSecond: {
     lda GameOver
-    bne !-
+    beq !+
+    rts
 
-    GetRandomNumberInRange(1, 250)
-    cmp #238
-    bcc WaitForNewMovement
-
-  Shoot:
-// Alien have to shoot
-    jsr Aliens.Shoot
-
-  WaitForNewMovement:
-// Calculate 10th of second, if delta is < 10th seconds
-// no move on aliens
-    jsr Utils.WaitFor10thSecond
-    lda Utils.WaitFor10thSecond.WaitCounter
-    bne !-
-
-  MoveAlienBlock:
+  !:
     InvertValue(MoveTick)
-    
+
 // Detect direction, based on current direction and
 // alien position
     DetectDirection(Direction, HasSwitched)
 
+    rts
+}
+
+Scan50thSecond: {
+    lda GameOver
+    beq !+
+    rts
+
+  !:
 // If alien direction has switched, need to go down
     AliensDescends(HasSwitched)
 
 // Move aliens according to direction
     MoveAliens(Direction, HasSwitched)
 
-    jmp !-
+    rts
 }
 
 .macro MainGameSettings() {
