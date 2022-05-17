@@ -602,31 +602,6 @@ SetColorToChars: {
 
 .filenamespace Utils
 
-WaitFor10thSecond: {
-    jsr WaitRoutine
-
-    lda WaitCounter
-    cmp #50
-    beq ResetCounter
-    inc WaitCounter
-    jmp Done
-
-  ResetCounter:
-    lda #0
-    sta WaitCounter
-
-  Done:
-    lda c64lib.SPRITE_2B_COLLISION
-    sta CollisionBkgDummy
-
-    lda c64lib.SPRITE_2S_COLLISION
-    sta CollisionSprDummy
-
-    rts
-  
-  WaitCounter: .byte 0
-}
-
 WaitRoutine: {
   VBLANKWAITLOW:
     lda $d011
