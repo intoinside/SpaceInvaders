@@ -20,45 +20,141 @@ Entry: {
     IsReturnPressedAndReleased()
     MainGameSettings()
 
-    NewGameSettings()
+    CopyScreenRam(MapData, MapDummyArea)
+
+    jsr Keyboard.Init
+    SetIrqRaster(0)
+
+    jsr NewGameSettings
+
+    jmp *
+}
+
+WaitFrame: .byte 0
+
+.macro SetIrqRaster(line) {
+    sei
+    lda #%01111111
+    sta $dc0d
+    and $d011
+    sta $d011
+
+    lda $dc0d
+    lda $dd0d
+
+    lda #0
+    sta $d012
+
+    lda #<Irq
+    sta $0314
+    lda #>Irq
+    sta $0315
+
+    lda #%00000001
+    sta $d01a
+
+    cli
+}
+
+* = * "Irq"
+Irq: {
+    lda c64lib.SPRITE_2B_COLLISION
+    sta CollisionBkgDummy
+
+    lda c64lib.SPRITE_2S_COLLISION
+    sta CollisionSprDummy
+
+    jsr ScanLineZero
+
+    lda WaitCounter
+    cmp #30
+    beq On30Th
+
+    cmp #40
+    beq On40Th
+
+    cmp #50
+    beq On50Th
+
+    jmp Done
+
+  On30Th:
+    jsr Scan30thSecond
+    jmp Done
+
+  On40Th:
+    jsr Scan40thSecond
+    jmp Done
+
+  On50Th:
+    jsr Scan50thSecond
+    lda #255
+    sta WaitCounter
+
+  Done:
+    inc WaitCounter
+    asl $d019
+    jmp $ea31
+
+  WaitCounter: .byte 1
+}
+
+* = * "ScanLineZero"
+ScanLineZero: {
+    lda GameOver
+    beq IsNotOver
 
   !:
-// Detect and handle shooter movement
+    rts
+
+  IsNotOver:
     Shooter_Handle()
     Aliens_Handle()
+
+    rts
+}
+
+* = * "Scan30thSecond"
+Scan30thSecond: {
+    lda StartNewGame
+    beq Done
+
+    jsr NewGameSettings
     
+  Done:
+    rts
+}
+
+* = * "Scan40thSecond"
+Scan40thSecond: {
     lda GameOver
-    bne !-
+    beq !+
+    rts
 
-    GetRandomNumberInRange(1, 250)
-    cmp #238
-    bcc WaitForNewMovement
-
-  Shoot:
-// Alien have to shoot
-    jsr Aliens.Shoot
-
-  WaitForNewMovement:
-// Calculate 10th of second, if delta is < 10th seconds
-// no move on aliens
-    jsr Utils.WaitFor10thSecond
-    lda Utils.WaitFor10thSecond.WaitCounter
-    bne !-
-
-  MoveAlienBlock:
+  !:
     InvertValue(MoveTick)
-    
+
 // Detect direction, based on current direction and
 // alien position
     DetectDirection(Direction, HasSwitched)
 
+    rts
+}
+
+* = * "Scan50thSecond"
+Scan50thSecond: {
+    lda GameOver
+    beq !+
+    rts
+
+  !:
 // If alien direction has switched, need to go down
     AliensDescends(HasSwitched)
 
 // Move aliens according to direction
     MoveAliens(Direction, HasSwitched)
 
-    jmp !-
+    rts
 }
 
 .macro MainGameSettings() {
@@ -83,20 +179,30 @@ Entry: {
     lda #0
     sta c64lib.BG_COL_0
     sta c64lib.BORDER_COL
-
-    jsr SetColorToChars
-
-    jsr SpritesCommon.Init
-    jsr Shooter.Init
-    jsr Aliens.Init
 }
 
-.macro NewGameSettings() {
-    lda #27
-    sta Hud.ScoreLabel
-    sta Hud.ScoreLabel + 1
-    sta Hud.ScoreLabel + 2
-    sta Hud.ScoreLabel + 3
+NewGameSettings: {
+    Hud_Init()
+
+    CopyScreenRam(MapDummyArea, MapData)
+    jsr SetColorToChars
+
+    Aliens_Init_Level()
+    Shooter_Init_Level()
+
+    lda #0
+    sta StartNewGame
+    sta GameOver
+    sta Direction
+    sta HasSwitched
+    sta MoveTick
+
+    lda #1
+    sta Irq.WaitCounter
+
+    jsr SpritesCommon.Init
+
+    rts
 }
 
 // Current alien direction, 0 means left, 1 means right

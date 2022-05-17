@@ -1,11 +1,16 @@
 
 #importonce
 
+StartNewGame: .byte 1
+
 // Holder for background collision
 CollisionBkgDummy: .byte 0
 
 // Holder for sprite collision
 CollisionSprDummy: .byte 0
+
+// Used for aliens frame switch
+MoveTick: .byte 0
 
 .macro GetRandomNumberInRange(minNumber, maxNumber) {
     lda #minNumber
@@ -28,6 +33,23 @@ CollisionSprDummy: .byte 0
   clc; lda $A000; adc #$02; sta $A000
   lda $A001; adc #$01; sta $A001
 }*/
+
+// Create a screen memory backup from StartAddress to EndAddress
+.macro CopyScreenRam(StartAddress, EndAddress) {
+    ldx #250
+  !:
+    dex
+    lda StartAddress, x
+    sta EndAddress, x
+    lda StartAddress + 250, x
+    sta EndAddress + 250, x
+    lda StartAddress + 500, x
+    sta EndAddress + 500, x
+    lda StartAddress + 750, x
+    sta EndAddress + 750, x
+    cpx #$0
+    bne !-
+}
 
 // Detect if direction must be switched.
 .macro DetectDirection(Direction, HasSwitched) {
@@ -577,9 +599,6 @@ SetColorToChars: {
     eor #$ff
     sta value
 }
-
-// Used for aliens frame switch
-MoveTick: .byte 0
 
 .filenamespace Utils
 

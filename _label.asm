@@ -11,6 +11,8 @@
 * = $4000 "MapData"
 MapData:
   .import binary "./assets/mainmap.bin"
+* = $4400 "MapDummyArea"
+MapDummyArea:
 
 .segment Charsets
 Charsets:
@@ -41,21 +43,21 @@ MAP: {
 
 SPRITES: {
   .label SHOOTER = ((Sprites - MapData) / 64)
-  .label BULLET = ((Sprites - MapData) / 64) + 1
+  .label BULLET = ((Sprites - MapData) / 64) + 5
 
-  .label ALIEN_BULLET = ((Sprites - MapData) / 64) + 2
+  .label ALIEN_BULLET = ((Sprites - MapData) / 64) + 6
 
-  .label EXPL_1 = ((Sprites - MapData) / 64) + 3
+  .label EXPL_1 = ((Sprites - MapData) / 64) + 7
   .label EXPL_2 = EXPL_1 + 1
   .label EXPL_3 = EXPL_1 + 2
   .label EXPL_4 = EXPL_1 + 3
   .label EXPL_5 = EXPL_1 + 4
 
-  .label FREEALIEN_1A = ((Sprites - MapData) / 64) + 8
+  .label FREEALIEN_1A = ((Sprites - MapData) / 64) + 12
   .label FREEALIEN_1B = FREEALIEN_1A + 1
-  .label FREEALIEN_2A = ((Sprites - MapData) / 64) + 10
+  .label FREEALIEN_2A = ((Sprites - MapData) / 64) + 14
   .label FREEALIEN_2B = FREEALIEN_2A + 1
-  .label FREEALIEN_3A = ((Sprites - MapData) / 64) + 12
+  .label FREEALIEN_3A = ((Sprites - MapData) / 64) + 16
   .label FREEALIEN_3B = FREEALIEN_3A + 1
 
   .label SPRITES_0 = MapData + $3f8
