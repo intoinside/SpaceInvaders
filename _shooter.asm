@@ -1,10 +1,8 @@
 
 #importonce
 
+// Handle all screen-refresh-depend actions
 .macro Shooter_Handle() {
-    lda GameOver
-    bne !+
-
     jsr Shooter.Move
 
     jsr Shooter.StillAlive
@@ -16,6 +14,13 @@
     jsr Shooter.HandleFreeAlien
 
   !:
+}
+
+.macro Shooter_Init_Level() {
+    lda #0
+    sta Shooter.HitAndExploding.IsExploding
+
+    jsr Shooter.Init
 }
 
 .filenamespace Shooter
@@ -71,6 +76,7 @@ StillAlive: {
 
     lda #1
     sta GameOver
+    jsr StartHitAndExploding
 
   Done:
     rts
@@ -424,6 +430,54 @@ AddPointsForAliens: {
     rts
 }
 
+* = * "Shooter StartHitAndExploding"
+StartHitAndExploding: {
+    lda #1
+    sta HitAndExploding.IsExploding
+
+    jsr HitAndExploding
+
+    rts
+}
+
+* = * "Shooter HitAndExploding"
+HitAndExploding: {
+    lda IsExploding
+    beq Done
+
+    ldx #5
+  Loop:
+    lda #SPRITES.SHOOTER
+    sta SPRITES.SPRITES_0
+    jsr Utils.WaitRoutine
+    nop
+    inc SPRITES.SPRITES_0
+    jsr Utils.WaitRoutine
+    nop
+    inc SPRITES.SPRITES_0
+    jsr Utils.WaitRoutine
+    nop  
+    inc SPRITES.SPRITES_0
+    jsr Utils.WaitRoutine
+    nop  
+    inc SPRITES.SPRITES_0
+    jsr Utils.WaitRoutine
+
+    dex
+    bne Loop
+
+    dec IsExploding
+    inc StartNewGame
+
+    lda #SPRITES.SHOOTER
+    sta SPRITES.SPRITES_0
+
+  Done:
+    rts
+
+    IsExploding: .byte 0
+}
+
 // Hold if shoot is in progress
 IsShooting: .byte 0
 
@@ -436,6 +490,7 @@ ExplosionCounter: .byte 0
 #import "./_label.asm"
 #import "./_utils.asm"
 #import "./_hud.asm"
+#import "./_keyboard.asm"
 
 #import "./chipset/lib/vic2.asm"
 #import "./common/lib/math-global.asm"

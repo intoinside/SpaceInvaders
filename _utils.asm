@@ -1,11 +1,16 @@
 
 #importonce
 
+StartNewGame: .byte 1
+
 // Holder for background collision
 CollisionBkgDummy: .byte 0
 
 // Holder for sprite collision
 CollisionSprDummy: .byte 0
+
+// Used for aliens frame switch
+MoveTick: .byte 0
 
 .macro GetRandomNumberInRange(minNumber, maxNumber) {
     lda #minNumber
@@ -594,9 +599,6 @@ SetColorToChars: {
     eor #$ff
     sta value
 }
-
-// Used for aliens frame switch
-MoveTick: .byte 0
 
 .filenamespace Utils
 

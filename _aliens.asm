@@ -1,10 +1,8 @@
 
 #importonce
 
+// Handle non-move aliens actions (done on every screen refresh)
 .macro Aliens_Handle() {
-    lda GameOver
-    bne !+
-
     jsr Aliens.Shoot
 
     jsr Aliens.HandleShoot
@@ -12,6 +10,10 @@
     jsr Aliens.Explosions
 
   !:
+}
+
+.macro Aliens_Init_Level() {
+    jsr Aliens.Init
 }
 
 .filenamespace Aliens
@@ -209,6 +211,8 @@ HandleShoot: {
 
     lda #1
     sta GameOver
+    jsr Shooter.StartHitAndExploding
+
     jmp HideBullet
 
 // Calculate screen ram row
@@ -356,6 +360,7 @@ Explosions: {
   DummyWait: .byte 0
 }
 
+#import "./_shooter.asm"
 #import "./_label.asm"
 #import "./_utils.asm"
 

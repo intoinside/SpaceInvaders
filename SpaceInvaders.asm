@@ -22,9 +22,10 @@ Entry: {
 
     CopyScreenRam(MapData, MapDummyArea)
 
-    NewGameSettings()
-
+    jsr Keyboard.Init
     SetIrqRaster(0)
+
+    jsr NewGameSettings
 
     jmp *
 }
@@ -55,6 +56,7 @@ WaitFrame: .byte 0
     cli
 }
 
+* = * "Irq"
 Irq: {
     lda c64lib.SPRITE_2B_COLLISION
     sta CollisionBkgDummy
@@ -65,40 +67,65 @@ Irq: {
     jsr ScanLineZero
 
     lda WaitCounter
+    cmp #30
+    beq On30Th
+
     cmp #40
     beq On40Th
+
     cmp #50
     beq On50Th
-    inc WaitCounter
+
+    jmp Done
+
+  On30Th:
+    jsr Scan30thSecond
     jmp Done
 
   On40Th:
     jsr Scan40thSecond
+    jmp Done
 
   On50Th:
     jsr Scan50thSecond
-    lda #0
+    lda #255
     sta WaitCounter
 
   Done:
+    inc WaitCounter
     asl $d019
     jmp $ea31
 
   WaitCounter: .byte 1
 }
 
+* = * "ScanLineZero"
 ScanLineZero: {
     lda GameOver
-    beq !+
-    rts
+    beq IsNotOver
 
   !:
+    rts
+
+  IsNotOver:
     Shooter_Handle()
     Aliens_Handle()
 
     rts
 }
 
+* = * "Scan30thSecond"
+Scan30thSecond: {
+    lda StartNewGame
+    beq Done
+
+    jsr NewGameSettings
+    
+  Done:
+    rts
+}
+
+* = * "Scan40thSecond"
 Scan40thSecond: {
     lda GameOver
     beq !+
@@ -114,6 +141,7 @@ Scan40thSecond: {
     rts
 }
 
+* = * "Scan50thSecond"
 Scan50thSecond: {
     lda GameOver
     beq !+
@@ -151,22 +179,30 @@ Scan50thSecond: {
     lda #0
     sta c64lib.BG_COL_0
     sta c64lib.BORDER_COL
-
-    jsr SetColorToChars
-
-    jsr SpritesCommon.Init
-    jsr Shooter.Init
-    jsr Aliens.Init
 }
 
-.macro NewGameSettings() {
-    lda #27
-    sta Hud.ScoreLabel
-    sta Hud.ScoreLabel + 1
-    sta Hud.ScoreLabel + 2
-    sta Hud.ScoreLabel + 3
+NewGameSettings: {
+    Hud_Init()
 
     CopyScreenRam(MapDummyArea, MapData)
+    jsr SetColorToChars
+
+    Aliens_Init_Level()
+    Shooter_Init_Level()
+
+    lda #0
+    sta StartNewGame
+    sta GameOver
+    sta Direction
+    sta HasSwitched
+    sta MoveTick
+
+    lda #1
+    sta Irq.WaitCounter
+
+    jsr SpritesCommon.Init
+
+    rts
 }
 
 // Current alien direction, 0 means left, 1 means right

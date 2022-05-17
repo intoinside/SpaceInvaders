@@ -10,14 +10,23 @@
     sta Hud.AddScore.Points + 1
     lda #digit3
     sta Hud.AddScore.Points
-/*
-    lda #digit4
-    sta Hud.AddScore.Points
-*/
+
     jsr Hud.AddScore
 }
 
+.macro Hud_Init() {
+    lda #27
+    sta Hud.ScoreLabel
+    sta Hud.ScoreLabel + 1
+    sta Hud.ScoreLabel + 2
+    sta Hud.ScoreLabel + 3
+}
+
 .filenamespace Hud
+
+SetupGameOver: {
+    rts
+}
 
 * = * "Hud AddScore"
 AddScore: {
