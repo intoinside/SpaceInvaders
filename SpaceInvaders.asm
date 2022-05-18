@@ -100,16 +100,19 @@ Irq: {
 }
 
 * = * "ScanLineZero"
+/* Executed everytime scanline starts from 0. It means, every
+screen refresh.*/
 ScanLineZero: {
     lda GameOver
     beq IsNotOver
 
-  !:
     rts
 
   IsNotOver:
     Shooter_Handle()
     Aliens_Handle()
+
+    Shooter_FreeAlienHit()
 
     rts
 }
@@ -197,10 +200,10 @@ NewGameSettings: {
     sta HasSwitched
     sta MoveTick
 
+    jsr SpritesCommon.Init
+
     lda #1
     sta Irq.WaitCounter
-
-    jsr SpritesCommon.Init
 
     rts
 }

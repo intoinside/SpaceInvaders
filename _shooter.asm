@@ -1,6 +1,8 @@
 
 #importonce
 
+FreeAlienExploding: .byte 0
+
 // Handle all screen-refresh-depend actions
 .macro Shooter_Handle() {
     jsr Shooter.Move
@@ -13,6 +15,8 @@
 
     jsr Shooter.HandleFreeAlien
 
+    jsr Shooter.FreeAlienExplosions
+
   !:
 }
 
@@ -21,6 +25,16 @@
     sta Shooter.HitAndExploding.IsExploding
 
     jsr Shooter.Init
+}
+
+.macro Shooter_FreeAlienHit() {
+    lda CollisionSprDummy
+    cmp #%00001010
+    bne !+
+
+    jsr Shooter.ShowFreeAlienExplosion
+
+  !:
 }
 
 .filenamespace Shooter
@@ -318,6 +332,9 @@ HandleFreeAlien: {
     lda AlienShowing
     beq AlienNotAlive
 
+    lda FreeAlienExploding
+    bne Done
+
 // Alien already on screen, handle it
     inc c64lib.SPRITE_3_X
     lda c64lib.SPRITE_3_X
@@ -379,6 +396,59 @@ HandleFreeAlien: {
   AlienShowing: .byte 0
   AlienType: .byte 0
   DummyWaitForSwitch: .byte 0
+}
+
+* = * "Shooter ShowFreeAlienExplosion"
+ShowFreeAlienExplosion: {
+    inc FreeAlienExploding
+
+    lda #SPRITES.EXPL_1
+    sta SPRITES.SPRITES_3
+
+    rts
+}
+
+* = * "Shooter FreeAlienExplosions"
+FreeAlienExplosions: {
+    lda FreeAlienExploding
+    beq Done
+
+    lda SPRITES.SPRITES_3
+    cmp #SPRITES.EXPL_5
+    beq HideSprite
+
+    bcc AdvanceFrame
+
+    jmp Done
+    
+  AdvanceFrame:
+    inc c64lib.BORDER_COL
+
+    inc DummyWait
+    lda DummyWait
+    cmp #10
+    bne Done
+    inc SPRITES.SPRITES_3
+
+    lda #0
+    sta DummyWait
+
+    jmp Done
+
+  HideSprite:
+    lda c64lib.SPRITE_ENABLE
+    and #%11110111
+    sta c64lib.SPRITE_ENABLE
+
+    dec FreeAlienExploding
+
+    lda #0
+    sta c64lib.BORDER_COL
+
+  Done:
+    rts
+
+  DummyWait: .byte 0
 }
 
 * = * "Shooter AddPointsForAliens"
