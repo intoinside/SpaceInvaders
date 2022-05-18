@@ -376,6 +376,11 @@ HandleFreeAlien: {
     ora #%00001000
     sta c64lib.SPRITE_ENABLE
 
+    lda #SPRITES.FREEALIEN_1A
+    sta SPRITES.SPRITES_3
+    lda #LIGHT_GRAY
+    sta c64lib.SPRITE_3_COLOR
+
     inc AlienShowing
 
     jmp Done
@@ -404,6 +409,8 @@ ShowFreeAlienExplosion: {
 
     lda #SPRITES.EXPL_1
     sta SPRITES.SPRITES_3
+    lda #YELLOW
+    sta c64lib.SPRITE_3_COLOR
 
     rts
 }

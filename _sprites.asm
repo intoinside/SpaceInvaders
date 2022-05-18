@@ -34,9 +34,6 @@ Init: {
     lda #SPRITES.BULLET
     sta SPRITES.SPRITES_1
 
-    lda #SPRITES.FREEALIEN_1A
-    sta SPRITES.SPRITES_3
-
     lda #LIGHT_RED
     sta c64lib.SPRITE_0_COLOR
     lda #GREY
@@ -45,8 +42,6 @@ Init: {
     sta c64lib.SPRITE_2_COLOR
     sta c64lib.SPRITE_4_COLOR
     sta c64lib.SPRITE_5_COLOR
-    lda #LIGHT_GRAY
-    sta c64lib.SPRITE_3_COLOR
 
     rts
 }
