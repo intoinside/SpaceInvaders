@@ -20,7 +20,7 @@ Entry: {
     IsReturnPressedAndReleased()
     MainGameSettings()
 
-    CopyScreenRam(MapData, MapDummyArea)
+    CopyGameAreaScreenRam(MapData, MapDummyArea)
 
     jsr Keyboard.Init
     SetIrqRaster(0)
@@ -103,9 +103,17 @@ Irq: {
 /* Executed everytime scanline starts from 0. It means, every
 screen refresh.*/
 ScanLineZero: {
+    lda LifeEnd
+    beq CheckGameOver
+
+    jsr NewLifeSettings
+    rts
+    
+  CheckGameOver:
     lda GameOver
     beq IsNotOver
 
+    jsr NewGameSettings
     rts
 
   IsNotOver:
@@ -119,12 +127,6 @@ ScanLineZero: {
 
 * = * "Scan30thSecond"
 Scan30thSecond: {
-    lda StartNewGame
-    beq Done
-
-    jsr NewGameSettings
-    
-  Done:
     rts
 }
 
@@ -184,10 +186,35 @@ Scan50thSecond: {
     sta c64lib.BORDER_COL
 }
 
+* = * "NewLifeSettings"
+NewLifeSettings: {
+    CopyGameAreaScreenRam(MapDummyArea, MapData)
+    jsr SetColorToChars
+
+    Aliens_Init_Level()
+    Shooter_Init_Level()
+
+    jsr SpritesCommon.Init
+
+    lda #0
+    sta StartNewGame
+    sta LifeEnd
+    sta Direction
+    sta HasSwitched
+    sta MoveTick
+
+    lda #1
+    sta Irq.WaitCounter
+
+    rts
+}
+
+* = * "NewGameSettings"
 NewGameSettings: {
+    jsr Hud.CompareAndUpdateHiScore
     Hud_Init()
 
-    CopyScreenRam(MapDummyArea, MapData)
+    CopyGameAreaScreenRam(MapDummyArea, MapData)
     jsr SetColorToChars
 
     Aliens_Init_Level()
@@ -196,6 +223,7 @@ NewGameSettings: {
     lda #0
     sta StartNewGame
     sta GameOver
+    sta LifeEnd
     sta Direction
     sta HasSwitched
     sta MoveTick

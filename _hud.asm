@@ -1,8 +1,18 @@
 
 #importonce
 
-// Add points to current score
-//.macro AddPoints(digit4, digit3, digit2, digit1) {
+.macro Hud_Init() {
+    lda #27
+    sta Hud.ScoreLabel
+    sta Hud.ScoreLabel + 1
+    sta Hud.ScoreLabel + 2
+    sta Hud.ScoreLabel + 3
+
+    lda #(3 + Hud.ZeroChar)
+    sta Hud.LifeLeftCounter
+}
+
+/* Add points to current score */
 .macro AddPoints(digit3, digit2, digit1) {
     lda #digit1
     sta Hud.AddScore.Points + 2
@@ -14,19 +24,7 @@
     jsr Hud.AddScore
 }
 
-.macro Hud_Init() {
-    lda #27
-    sta Hud.ScoreLabel
-    sta Hud.ScoreLabel + 1
-    sta Hud.ScoreLabel + 2
-    sta Hud.ScoreLabel + 3
-}
-
 .filenamespace Hud
-
-SetupGameOver: {
-    rts
-}
 
 * = * "Hud AddScore"
 AddScore: {
@@ -132,6 +130,8 @@ CompareAndUpdateHiScore: {
 .label ZeroChar = 27;
 .label ScoreLabel = MapData + c64lib_getTextOffset(32, 3);
 .label HiScoreLabel = MapData + c64lib_getTextOffset(32, 7);
+
+.label LifeLeftCounter = MapData + c64lib_getTextOffset(32, 10);
 
 CurrentScore: .byte 0, 0, 0, 0
 

@@ -87,8 +87,11 @@ KEYB: {
   .label REPEAT_SWITCH      = $028a
 }
 
-// 1 means game over
+// 1 means game over (all life lost)
 GameOver: .byte 0
+
+// 1 means shooter exploded
+LifeEnd: .byte 0
 
 ScreenMemTableL: .byte $00, $28, $50, $78, $a0, $c8, $f0, $18, $40, $68
                   .byte $90, $b8, $e0, $08, $30, $58, $80, $a8, $d0, $f8

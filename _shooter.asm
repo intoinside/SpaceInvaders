@@ -88,8 +88,8 @@ StillAlive: {
     bit CollisionBkgDummy
     beq Done
 
-    lda #1
-    sta GameOver
+// Shooter exploded
+    jsr CheckLifeLeftAndGameOver
     jsr StartHitAndExploding
 
   Done:

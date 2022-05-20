@@ -209,8 +209,8 @@ HandleShoot: {
     cmp #%00010001
     bne MoveBullet
 
-    lda #1
-    sta GameOver
+// Shooter exploded
+    jsr CheckLifeLeftAndGameOver
     jsr Shooter.StartHitAndExploding
 
     jmp HideBullet

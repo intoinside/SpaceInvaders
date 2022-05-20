@@ -12,6 +12,22 @@ CollisionSprDummy: .byte 0
 // Used for aliens frame switch
 MoveTick: .byte 0
 
+* = * "CheckLifeLeftAndGameOver"
+CheckLifeLeftAndGameOver: {
+    dec Hud.LifeLeftCounter
+    lda Hud.LifeLeftCounter
+    cmp #Hud.ZeroChar
+    beq NoMoreLife
+
+// At least one life left
+    inc LifeEnd
+    rts
+  
+  NoMoreLife:
+    inc GameOver
+    rts
+}
+
 .macro GetRandomNumberInRange(minNumber, maxNumber) {
     lda #minNumber
     sta Utils.GetRandom.GeneratorMin
@@ -34,21 +50,20 @@ MoveTick: .byte 0
   lda $A001; adc #$01; sta $A001
 }*/
 
-// Create a screen memory backup from StartAddress to EndAddress
-.macro CopyScreenRam(StartAddress, EndAddress) {
-    ldx #250
+/* Create a screen memory backup from StartAddress to EndAddress but
+limited to game area */
+.macro CopyGameAreaScreenRam(StartAddress, EndAddress) {
+    ldx #31
   !:
     dex
-    lda StartAddress, x
-    sta EndAddress, x
-    lda StartAddress + 250, x
-    sta EndAddress + 250, x
-    lda StartAddress + 500, x
-    sta EndAddress + 500, x
-    lda StartAddress + 750, x
-    sta EndAddress + 750, x
+    .for (var i = 0; i < 25 ; i++) {
+      lda StartAddress + (i * 40), x
+      sta EndAddress + (i * 40), x
+    }
     cpx #$0
-    bne !-
+    beq Done
+    jmp !-
+  Done:
 }
 
 // Detect if direction must be switched.
@@ -630,5 +645,6 @@ GetRandom: {
 }
 
 #import "./_label.asm"
+#import "./_hud.asm"
 
 #import "./common/lib/math-global.asm"
