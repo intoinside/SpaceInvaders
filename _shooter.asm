@@ -443,14 +443,15 @@ FreeAlienExplosions: {
     jmp Done
 
   HideSprite:
+    lda #0
+    sta c64lib.BORDER_COL
+    sta FreeAlienExploding
+
     lda c64lib.SPRITE_ENABLE
     and #%11110111
     sta c64lib.SPRITE_ENABLE
 
-    dec FreeAlienExploding
-
-    lda #0
-    sta c64lib.BORDER_COL
+    AddPoints(0, 3, 0)
 
   Done:
     rts
