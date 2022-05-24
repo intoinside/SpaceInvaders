@@ -23,6 +23,8 @@ FreeAlienExploding: .byte 0
 .macro Shooter_Init_Level() {
     lda #0
     sta Shooter.HitAndExploding.IsExploding
+    sta Shooter.IsShooting
+    sta Shooter.AlienShowing
 
     jsr Shooter.Init
 }

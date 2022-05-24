@@ -226,6 +226,9 @@ NewLifeSettings: {
     CopyGameAreaScreenRam(MapDummyArea, MapData)
     jsr SetColorToChars
 
+    lda #%00000001
+    sta c64lib.SPRITE_ENABLE
+
     Aliens_Init_Level()
     Shooter_Init_Level()
 

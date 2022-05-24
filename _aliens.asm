@@ -13,6 +13,9 @@
 }
 
 .macro Aliens_Init_Level() {
+    lda #0
+    sta Aliens.IsShooting
+    
     jsr Aliens.Init
 }
 
