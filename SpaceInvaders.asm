@@ -73,6 +73,11 @@ Irq: {
     cpx #0
     beq Done
     RemoveIntroMap()
+  
+  !:
+    jsr Joystick.IsFirePressed
+    cpx #0
+    bne !-
 
   GameLive:
     jsr ScanLineZero
