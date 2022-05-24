@@ -36,3 +36,23 @@ GetJoystickMove: {
     stx FirePressed
     rts
 }
+
+* = * "Joystick GetJoystickMove"
+IsFirePressed: {
+    lda #0
+    sta $dc02
+
+    ldx #$00
+    lda $dc00
+
+    lsr
+    lsr
+    lsr
+    lsr
+    lsr
+    bcs !NoFirePressed+
+    ldx #$ff
+  !NoFirePressed:
+    stx FirePressed
+    rts
+}

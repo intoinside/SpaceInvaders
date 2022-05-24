@@ -18,14 +18,16 @@
 * = $0810 "Entry"
 Entry: {
     IsReturnPressedAndReleased()
+
     MainGameSettings()
 
     CopyGameAreaScreenRam(MapData, MapDummyArea)
 
     jsr Keyboard.Init
-    SetIrqRaster(0)
 
     jsr NewGameSettings
+
+    SetIrqRaster(0)
 
     jmp *
 }
@@ -64,6 +66,15 @@ Irq: {
     lda c64lib.SPRITE_2S_COLLISION
     sta CollisionSprDummy
 
+    lda IsIntroMap
+    beq GameLive
+
+    jsr Joystick.IsFirePressed
+    cpx #0
+    beq Done
+    RemoveIntroMap()
+
+  GameLive:
     jsr ScanLineZero
 
     lda WaitCounter
@@ -173,17 +184,41 @@ Scan50thSecond: {
     lda #%00000010
     sta CIA2.PORT_A
 
-// Set pointer to char memory to $5800-$5fff (xxxx011x)
-// and pointer to screen memory to $4400-$47ff (0001xxxx)
-    lda #%00010110
-    sta c64lib.MEMORY_CONTROL  
-
     lda #%11001000  // 40 cols, multicolor mode
     sta c64lib.CONTROL_2
 
     lda #0
     sta c64lib.BG_COL_0
     sta c64lib.BORDER_COL
+}
+
+.macro ShowIntroMap() {
+    lda #%00000000
+    sta c64lib.SPRITE_ENABLE
+
+// Set pointer to char memory to $5800-$5fff (xxxx011x)
+// and pointer to screen memory to $4000-$47ff (0000xxxx)
+    lda #%00000110
+    sta c64lib.MEMORY_CONTROL
+
+    inc IsIntroMap
+
+    jsr SetColorToChars
+}
+
+.macro RemoveIntroMap() {
+    lda #%00000001
+    sta c64lib.SPRITE_ENABLE
+
+// Set pointer to char memory to $5800-$5fff (xxxx011x)
+// and pointer to screen memory to $4400-$47ff (0001xxxx)
+    lda #%00010110
+    sta c64lib.MEMORY_CONTROL
+
+    lda #0
+    sta IsIntroMap
+
+    jsr SetColorToChars
 }
 
 * = * "NewLifeSettings"
@@ -214,8 +249,9 @@ NewGameSettings: {
     jsr Hud.CompareAndUpdateHiScore
     Hud_Init()
 
+    ShowIntroMap()
+
     CopyGameAreaScreenRam(MapDummyArea, MapData)
-    jsr SetColorToChars
 
     Aliens_Init_Level()
     Shooter_Init_Level()
@@ -236,6 +272,9 @@ NewGameSettings: {
     rts
 }
 
+// If 1 then intro map is showing (no game action should be taken)
+IsIntroMap: .byte 0
+
 // Current alien direction, 0 means left, 1 means right
 Direction: .byte 0
 
@@ -246,6 +285,7 @@ HasSwitched: .byte 0
 #import "_sprites.asm"
 #import "_shooter.asm"
 #import "_keyboard.asm"
+#import "_joystick.asm"
 #import "_utils.asm"
 
 #import "chipset/lib/vic2.asm"

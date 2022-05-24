@@ -14,8 +14,6 @@ Sprite recap
 
 * = * "Sprites Init"
 Init: {
-    lda #%00000001
-    sta c64lib.SPRITE_ENABLE
     lda #%11111111
     sta c64lib.SPRITE_COL_MODE
 
