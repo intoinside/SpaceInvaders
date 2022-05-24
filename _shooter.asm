@@ -24,7 +24,7 @@ FreeAlienExploding: .byte 0
     lda #0
     sta Shooter.HitAndExploding.IsExploding
     sta Shooter.IsShooting
-    sta Shooter.AlienShowing
+    sta Shooter.HandleFreeAlien.AlienShowing
 
     jsr Shooter.Init
 }

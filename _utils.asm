@@ -609,6 +609,46 @@ SetColorToChars: {
   CleanLoop: .byte $03
 }
 
+* = * "SetColorToCharsForIntromap"
+SetColorToCharsForIntromap: {
+    lda #$04
+    sta CleanLoop
+    lda #0
+    sta StartLoop + 1
+    lda #>IntroMapData
+    sta PaintCols + 2
+    lda #$d8
+    sta ColorMap + 2
+  StartLoop:
+    ldx #$00
+  PaintCols:
+    ldy IntroMapData, x
+    lda CharsetsColors, y
+  ColorMap:
+    sta $d800, x
+    dex
+    bne PaintCols
+
+    inc PaintCols + 2
+    inc ColorMap + 2
+    dec CleanLoop
+    lda CleanLoop
+    beq Done
+    cmp #$01
+    beq SetLastRun
+    jmp StartLoop
+
+  SetLastRun:
+    lda #$e7
+    sta StartLoop + 1
+    jmp StartLoop
+
+  Done:
+    rts
+
+  CleanLoop: .byte $03
+}
+
 .macro InvertValue(value) {
     lda value
     eor #$ff

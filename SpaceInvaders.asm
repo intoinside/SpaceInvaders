@@ -203,7 +203,7 @@ Scan50thSecond: {
 
     inc IsIntroMap
 
-    jsr SetColorToChars
+    jsr SetColorToCharsForIntromap
 }
 
 .macro RemoveIntroMap() {
