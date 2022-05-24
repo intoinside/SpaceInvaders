@@ -31,7 +31,7 @@ Init: {
     // Start scan from line 1
     lda #$28
     sta CurrentPosition
-    lda #$40
+    lda #>MapData
     sta CurrentPosition + 1
 
     lda #0
@@ -62,7 +62,7 @@ Init: {
 
 // Check if HiByte CurrentPosition holds last row
     lda CurrentPosition + 1
-    cmp #$43
+    cmp #(>MapData) + 3
     bne CalculateNextRow
 
 // Check if LoByte CurrentPosition holds last row
@@ -103,7 +103,7 @@ Shoot: {
     sta Found
 
 // Source line starts from 23
-    lda #$43
+    lda #(>MapData) + 3
     sta CurrentPosition + 1
     lda #$98
     sta CurrentPosition
@@ -170,7 +170,7 @@ Shoot: {
 
 // Check if HiByte CurrentPosition holds first row
     lda CurrentPosition + 1
-    cmp #$40
+    cmp #>MapData
     bne CalculateNextRow
 
 // Check if LoByte CurrentPosition holds first row

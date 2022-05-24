@@ -1,7 +1,7 @@
 
 #import "_label.asm"
 
-.file [name="./SpaceInvaders.prg", segments="Code, Charsets, CharsetsColors, MapData, Sprites", modify="BasicUpstart", _start=$0810]
+.file [name="./SpaceInvaders.prg", segments="Code, Charsets, CharsetsColors, Map, Sprites", modify="BasicUpstart", _start=$0810]
 .disk [filename="./SpaceInvaders.d64", name="SPACEINVADERS", id="C2022", showInfo]
 {
   [name="----------------", type="rel"],
@@ -9,7 +9,7 @@
   [name="--- INTORCIA ---", type="rel"],
   [name="-- @GMAIL.COM --", type="rel"],
   [name="----------------", type="rel"],
-  [name="SPACEINVADERS", type="prg", segments="Code, Charsets, CharsetsColors, MapData, Sprites", modify="BasicUpstart", _start=$0810],
+  [name="SPACEINVADERS", type="prg", segments="Code, Charsets, CharsetsColors, Map, Sprites", modify="BasicUpstart", _start=$0810],
   [name="----------------", type="rel"]
 }
 
@@ -174,8 +174,8 @@ Scan50thSecond: {
     sta CIA2.PORT_A
 
 // Set pointer to char memory to $5800-$5fff (xxxx011x)
-// and pointer to screen memory to $4000-$43ff (0000xxxx)
-    lda #%00000110
+// and pointer to screen memory to $4400-$47ff (0001xxxx)
+    lda #%00010110
     sta c64lib.MEMORY_CONTROL  
 
     lda #%11001000  // 40 cols, multicolor mode

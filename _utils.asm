@@ -109,7 +109,7 @@ limited to game area */
 // Detect if left or right edge contains an alien. Accumulator contains 0 if
 // no alien has been found, 1 otherwise. Must be used only with macro.
 DetectEdgeReached: {
-    lda #$40
+    lda #>MapData
     sta CurrentPosition + 1
 
   SetupNewLine:
@@ -126,7 +126,7 @@ DetectEdgeReached: {
   NextCheck:
 // Check if high byte of last row is reached
     lda CurrentPosition + 1
-    cmp #$43
+    cmp #(>MapData) + 3
     bcc CalculateNextRow
 
 // Check if low byte of last row is reached
@@ -188,7 +188,7 @@ DetectEdgeReached: {
  copies line n on n-1 until top is reached. */
 MoveAliensToDown: {
 // Source line starts from 23, destination line starts from 24
-    lda #$43
+    lda #(>MapData) + 3
     sta CurrentPosition + 1
     sta NewPosition + 1
     lda #$98
@@ -288,7 +288,7 @@ MoveAliensToDown: {
 
 // Check if HiByte CurrentPosition holds first row
     lda CurrentPosition + 1
-    cmp #$40
+    cmp #>MapData
     bne CalculateNextRow
 
 // Check if LoByte CurrentPosition holds first row
@@ -315,7 +315,7 @@ MoveAliensToLeft: {
 // Draw starts from line 1 (line 0 is used only for free alien)
     lda #$28
     sta CurrentPosition
-    lda #$40
+    lda #>MapData
     sta CurrentPosition + 1
 
   SetupNewLine:
@@ -414,7 +414,7 @@ MoveAliensToLeft: {
 
 // Check if HiByte CurrentPosition holds last row
     lda CurrentPosition + 1
-    cmp #$43
+    cmp #(>MapData) + 3
     bne NextLine
 
 // Check if LoByte CurrentPosition holds last row
@@ -445,7 +445,7 @@ MoveAliensToRight: {
 // Draw starts from line 1 (line 0 is used only for free alien)
     lda #$27
     sta CurrentPosition
-    lda #$40
+    lda #>MapData
     sta CurrentPosition + 1
 
   SetupNewLine:
@@ -545,7 +545,7 @@ MoveAliensToRight: {
 
 // Check if HiByte CurrentPosition holds last row
     lda CurrentPosition + 1
-    cmp #$43
+    cmp #(>MapData) + 3
     bne NextLine
 
 // Check if LoByte CurrentPosition holds last row

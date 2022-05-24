@@ -2,16 +2,19 @@
 #importonce
 
 .segmentdef Code
-.segmentdef MapData [start=$4000]
+.segmentdef Map [start=$4000]
 .segmentdef Sprites [start=$5000]
 .segmentdef Charsets [start=$5800]
 .segmentdef CharsetsColors [start=$c000]
 
-.segment MapData
-* = $4000 "MapData"
+.segment Map
+* = $4000 "IntroMapData"
+IntroMapData:
+  .import binary "./assets/intromap.bin"
+* = $4400 "MapData"
 MapData:
   .import binary "./assets/mainmap.bin"
-* = $4400 "MapDummyArea"
+* = $4800 "MapDummyArea"
 MapDummyArea:
 
 .segment Charsets
@@ -42,22 +45,23 @@ MAP: {
 }
 
 SPRITES: {
-  .label SHOOTER = ((Sprites - MapData) / 64)
-  .label BULLET = ((Sprites - MapData) / 64) + 5
+  .label FIRST_SPRITE_PTR = ((Sprites - IntroMapData) / 64)
+  .label SHOOTER = FIRST_SPRITE_PTR
+  .label BULLET = FIRST_SPRITE_PTR + 5
 
-  .label ALIEN_BULLET = ((Sprites - MapData) / 64) + 6
+  .label ALIEN_BULLET = FIRST_SPRITE_PTR + 6
 
-  .label EXPL_1 = ((Sprites - MapData) / 64) + 7
+  .label EXPL_1 = FIRST_SPRITE_PTR + 7
   .label EXPL_2 = EXPL_1 + 1
   .label EXPL_3 = EXPL_1 + 2
   .label EXPL_4 = EXPL_1 + 3
   .label EXPL_5 = EXPL_1 + 4
 
-  .label FREEALIEN_1A = ((Sprites - MapData) / 64) + 12
+  .label FREEALIEN_1A = FIRST_SPRITE_PTR + 12
   .label FREEALIEN_1B = FREEALIEN_1A + 1
-  .label FREEALIEN_2A = ((Sprites - MapData) / 64) + 14
+  .label FREEALIEN_2A = FIRST_SPRITE_PTR + 14
   .label FREEALIEN_2B = FREEALIEN_2A + 1
-  .label FREEALIEN_3A = ((Sprites - MapData) / 64) + 16
+  .label FREEALIEN_3A = FIRST_SPRITE_PTR + 16
   .label FREEALIEN_3B = FREEALIEN_3A + 1
 
   .label SPRITES_0 = MapData + $3f8
@@ -93,9 +97,10 @@ GameOver: .byte 0
 // 1 means shooter exploded
 LifeEnd: .byte 0
 
-ScreenMemTableL: .byte $00, $28, $50, $78, $a0, $c8, $f0, $18, $40, $68
-                  .byte $90, $b8, $e0, $08, $30, $58, $80, $a8, $d0, $f8
-                  .byte $20, $48, $70, $98, $c0
-ScreenMemTableH: .byte $40, $40, $40, $40, $40, $40, $40, $41, $41, $41
-                  .byte $41, $41, $41, $42, $42, $42, $42, $42, $42, $42
-                  .byte $43, $43, $43, $43, $43
+* = * "ScreenMemTableL"
+ScreenMemTableL:
+.for (var i = 0; i<25; i++) .byte <MapData + (i * $28)
+
+* = * "ScreenMemTableH"
+ScreenMemTableH:
+.for (var i = 0; i<25; i++) .byte >MapData + (i * $28)

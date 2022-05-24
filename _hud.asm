@@ -2,11 +2,12 @@
 #importonce
 
 .macro Hud_Init() {
-    lda #27
+    lda #Hud.ZeroChar
     sta Hud.ScoreLabel
     sta Hud.ScoreLabel + 1
     sta Hud.ScoreLabel + 2
     sta Hud.ScoreLabel + 3
+    sta Hud.ScoreLabel + 4
 
     lda #(3 + Hud.ZeroChar)
     sta Hud.LifeLeftCounter
@@ -31,7 +32,7 @@ AddScore: {
     ldx #3
     clc
   !:
-    lda CurrentScore, x
+    lda CurrentScore + 1, x
     adc Points - 1, x
     cmp #10
     bcc SaveDigit
@@ -39,7 +40,7 @@ AddScore: {
     sec
 
   SaveDigit:
-    sta CurrentScore, x
+    sta CurrentScore + 1, x
     dex
     bne !-
 
@@ -51,7 +52,7 @@ AddScore: {
 
 * = * "Hud ResetScore"
 ResetScore: {
-    ldx #3
+    ldx #5
     lda #0
   !:
     sta CurrentScore, x
@@ -71,7 +72,7 @@ DrawScore: {
     adc #ZeroChar
     sta ScoreLabel, x
     inx
-    cpx #$04
+    cpx #$05
     bne !-
 
   // Draws score label
@@ -108,6 +109,9 @@ CompareAndUpdateHiScore: {
     lda HiScoreLabel + 3
     cmp ScoreLabel + 3
     bcc UpdateHiScore4
+    lda HiScoreLabel + 4
+    cmp ScoreLabel + 4
+    bcc UpdateHiScore5
     jmp !+
 
   UpdateHiScore1:
@@ -122,6 +126,9 @@ CompareAndUpdateHiScore: {
   UpdateHiScore4:
     lda ScoreLabel + 3
     sta HiScoreLabel + 3
+  UpdateHiScore5:
+    lda ScoreLabel + 4
+    sta HiScoreLabel + 4
 
   !:
     rts
@@ -133,7 +140,7 @@ CompareAndUpdateHiScore: {
 
 .label LifeLeftCounter = MapData + c64lib_getTextOffset(32, 10);
 
-CurrentScore: .byte 0, 0, 0, 0
+CurrentScore: .byte 0, 0, 0, 0, 0
 
 #import "./_label.asm"
 #import "chipset/lib/vic2-global.asm"
