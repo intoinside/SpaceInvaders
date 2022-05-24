@@ -11,6 +11,13 @@
 
     lda #(3 + Hud.ZeroChar)
     sta Hud.LifeLeftCounter
+
+    lda #0
+    sta Hud.CurrentScore
+    sta Hud.CurrentScore + 1
+    sta Hud.CurrentScore + 2
+    sta Hud.CurrentScore + 3
+    sta Hud.CurrentScore + 4
 }
 
 /* Add points to current score */
@@ -117,18 +124,23 @@ CompareAndUpdateHiScore: {
   UpdateHiScore1:
     lda ScoreLabel
     sta HiScoreLabel
+    sta HiScoreLabelOnIntro
   UpdateHiScore2:
     lda ScoreLabel + 1
     sta HiScoreLabel + 1
+    sta HiScoreLabelOnIntro + 1
   UpdateHiScore3:
     lda ScoreLabel + 2
     sta HiScoreLabel + 2
+    sta HiScoreLabelOnIntro + 2
   UpdateHiScore4:
     lda ScoreLabel + 3
     sta HiScoreLabel + 3
+    sta HiScoreLabelOnIntro + 3
   UpdateHiScore5:
     lda ScoreLabel + 4
     sta HiScoreLabel + 4
+    sta HiScoreLabelOnIntro + 4
 
   !:
     rts
@@ -137,6 +149,8 @@ CompareAndUpdateHiScore: {
 .label ZeroChar = 27;
 .label ScoreLabel = MapData + c64lib_getTextOffset(32, 3);
 .label HiScoreLabel = MapData + c64lib_getTextOffset(32, 7);
+
+.label HiScoreLabelOnIntro = IntroMapData + c64lib_getTextOffset(27, 14);
 
 .label LifeLeftCounter = MapData + c64lib_getTextOffset(32, 10);
 
