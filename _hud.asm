@@ -76,7 +76,7 @@ DrawScore: {
     clc
   !:
     lda CurrentScore, x
-    adc #ZeroChar
+    adc #Map.ZeroChar
     sta ScoreLabel, x
     inx
     cpx #$05
@@ -146,7 +146,6 @@ CompareAndUpdateHiScore: {
     rts
 }
 
-.label ZeroChar = 27;
 .label ScoreLabel = MapData + c64lib_getTextOffset(32, 3);
 .label HiScoreLabel = MapData + c64lib_getTextOffset(32, 7);
 

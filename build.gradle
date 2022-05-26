@@ -59,6 +59,28 @@ preprocess {
                 interleaver {
                 }
             }
+            map {
+                left = 80
+                top = 0
+                right = 94
+                bottom = 7
+                interleaver {
+                    output = file("./assets/dialog-level-completed.bin")
+                }
+                interleaver {
+                }
+            }
+            map {
+                left = 80
+                top = 7
+                right = 94
+                bottom = 14
+                interleaver {
+                    output = file("./assets/dialog-dialog-game-over.bin")
+                }
+                interleaver {
+                }
+            }
         }
     }
 }
