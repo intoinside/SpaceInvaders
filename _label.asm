@@ -30,7 +30,7 @@ Sprites:
   .import binary "./assets/sprites.bin"
 
 MAP: {
-  .label PROTECTION_1 = 69
+  .label PROTECTION_1 = 70
 
   .label PROTECTION_LAST = PROTECTION_1 + 4
   .label PROTECTION_OVER = PROTECTION_LAST + 1

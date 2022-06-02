@@ -44,7 +44,7 @@ WaitFrame: .byte 0
     lda $dc0d
     lda $dd0d
 
-    lda #0
+    lda #line
     sta $d012
 
     lda #<Irq
@@ -74,6 +74,9 @@ Irq: {
     beq Done
     RemoveIntroMap()
   
+    lda #1
+    sta WaitCounter
+
   !:
     jsr Joystick.IsFirePressed
     cpx #0
