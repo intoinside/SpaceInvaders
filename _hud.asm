@@ -2,14 +2,14 @@
 #importonce
 
 .macro Hud_Init() {
-    lda #Hud.ZeroChar
+    lda #MAP.ZeroChar
     sta Hud.ScoreLabel
     sta Hud.ScoreLabel + 1
     sta Hud.ScoreLabel + 2
     sta Hud.ScoreLabel + 3
     sta Hud.ScoreLabel + 4
 
-    lda #(3 + Hud.ZeroChar)
+    lda #(3 + MAP.ZeroChar)
     sta Hud.LifeLeftCounter
 
     lda #0
@@ -76,7 +76,7 @@ DrawScore: {
     clc
   !:
     lda CurrentScore, x
-    adc #Map.ZeroChar
+    adc #MAP.ZeroChar
     sta ScoreLabel, x
     inx
     cpx #$05

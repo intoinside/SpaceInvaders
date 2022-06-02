@@ -16,7 +16,7 @@ MoveTick: .byte 0
 CheckLifeLeftAndGameOver: {
     dec Hud.LifeLeftCounter
     lda Hud.LifeLeftCounter
-    cmp #Hud.ZeroChar
+    cmp #MAP.ZeroChar
     beq NoMoreLife
 
 // At least one life left
