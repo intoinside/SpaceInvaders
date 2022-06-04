@@ -1,6 +1,18 @@
 
 #importonce
 
+.macro IsJoystickFirePressedAndReleased() {
+  !:
+    jsr Joystick.IsFirePressed
+    cpx #0
+    beq !-
+
+  !:
+    jsr Joystick.IsFirePressed
+    cpx #0
+    bne !-
+}
+
 .filenamespace Joystick
 
 // Player sprite direction, $00 - no move, $01 - right, $ff - left

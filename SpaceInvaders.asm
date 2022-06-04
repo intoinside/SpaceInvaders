@@ -17,29 +17,18 @@
 
 * = $0810 "Entry"
 Entry: {
-  IsReturnPressedAndReleased()
+    IsReturnPressedAndReleased()
 
-  MainGameSettings()
+    MainGameSettings()
 
-  CopyGameAreaScreenRam(MapData, MapDummyArea)
+    CopyGameAreaScreenRam(MapData, MapDummyArea)
 
-  jsr Keyboard.Init
+    jsr Keyboard.Init
 
-  jsr FirstGameStart
+    jsr NewGameSettings
 
   IntroLoop:
-    ShowIntroMap()
-
-  !:
-    jsr Joystick.IsFirePressed
-    cpx #0
-    beq !-
-
-  !:
-    jsr Joystick.IsFirePressed
-    cpx #0
-    bne !-
-
+    IsJoystickFirePressedAndReleased()
     RemoveIntroMap()
 
   GameLoop:
@@ -62,8 +51,13 @@ Entry: {
     lda GameOver
     beq IsNotOver
 
+    // GameOver, show dialog or wait for firepress
+    CopyDialogScreenRam(DialogGameOver, MapData)
+    jsr SetColorToChars
+    IsJoystickFirePressedAndReleased()
+
     jsr NewGameSettings
-    rts
+    jmp IntroLoop
 
   IsNotOver:
     Shooter_Handle()
@@ -176,55 +170,16 @@ NewLifeSettings: {
     rts
 }
 
-* = * "FirstGameStart"
-FirstGameStart: {
+* = * "NewGameSettings"
+NewGameSettings: {
     ShowIntroMap()
 
     CopyGameAreaScreenRam(MapDummyArea, MapData)
 
     Aliens_Init_Level()
     Shooter_Init_Level()
-
-    lda #0
-    sta StartNewGame
-    sta GameOver
-    sta LifeEnd
-    sta Direction
-    sta HasSwitched
-    sta MoveTick
-
-    jsr SpritesCommon.Init
-
-  Done:
-    rts
-}
-
-* = * "NewGameSettings"
-NewGameSettings: {
-    lda DialogShown
-    bne AlreadyShown
-
-    CopyDialogScreenRam(DialogGameOver, MapData)
-    jsr SetColorToChars
-    inc DialogShown
-    jmp Done
-
-  AlreadyShown:
-    IsReturnPressed()
-    bne HideDialog
-    jmp Done
-
-  HideDialog:
-    jsr Hud.CompareAndUpdateHiScore
     Hud_Init()
 
-    // ShowIntroMap()
-
-    CopyGameAreaScreenRam(MapDummyArea, MapData)
-
-    Aliens_Init_Level()
-    Shooter_Init_Level()
-
     lda #0
     sta StartNewGame
     sta GameOver
@@ -232,14 +187,11 @@ NewGameSettings: {
     sta Direction
     sta HasSwitched
     sta MoveTick
-    sta DialogShown
 
     jsr SpritesCommon.Init
 
   Done:
     rts
-
-  DialogShown: .byte 0
 }
 
 // If 1 then intro map is showing (no game action should be taken)
