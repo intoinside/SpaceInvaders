@@ -17,117 +17,47 @@
 
 * = $0810 "Entry"
 Entry: {
-    IsReturnPressedAndReleased()
+  IsReturnPressedAndReleased()
 
-    MainGameSettings()
+  MainGameSettings()
 
-    CopyGameAreaScreenRam(MapData, MapDummyArea)
+  CopyGameAreaScreenRam(MapData, MapDummyArea)
 
-    jsr Keyboard.Init
+  jsr Keyboard.Init
 
-    jsr NewGameSettings
+  jsr FirstGameStart
 
-    SetIrqRaster(0)
+  IntroLoop:
+    ShowIntroMap()
 
-    jmp *
-}
-
-WaitFrame: .byte 0
-
-.macro SetIrqRaster(line) {
-    sei
-    lda #%01111111
-    sta $dc0d
-    and $d011
-    sta $d011
-
-    lda $dc0d
-    lda $dd0d
-
-    lda #line
-    sta $d012
-
-    lda #<Irq
-    sta $0314
-    lda #>Irq
-    sta $0315
-
-    lda #%00000001
-    sta $d01a
-
-    cli
-}
-
-* = * "Irq"
-Irq: {
-    lda c64lib.SPRITE_2B_COLLISION
-    sta CollisionBkgDummy
-
-    lda c64lib.SPRITE_2S_COLLISION
-    sta CollisionSprDummy
-
-    lda IsIntroMap
-    beq GameLive
-
+  !:
     jsr Joystick.IsFirePressed
     cpx #0
-    beq Done
-    RemoveIntroMap()
-  
-    lda #1
-    sta WaitCounter
+    beq !-
 
   !:
     jsr Joystick.IsFirePressed
     cpx #0
     bne !-
 
-  GameLive:
-    jsr ScanLineZero
+    RemoveIntroMap()
 
-    lda WaitCounter
-    cmp #30
-    beq On30Th
+  GameLoop:
+    jsr Utils.WaitRoutine
+    lda c64lib.SPRITE_2B_COLLISION
+    sta CollisionBkgDummy
 
-    cmp #40
-    beq On40Th
+    lda c64lib.SPRITE_2S_COLLISION
+    sta CollisionSprDummy
 
-    cmp #50
-    beq On50Th
+    inc CounterForAliensMove
 
-    jmp Done
-
-  On30Th:
-    jsr Scan30thSecond
-    jmp Done
-
-  On40Th:
-    jsr Scan40thSecond
-    jmp Done
-
-  On50Th:
-    jsr Scan50thSecond
-    lda #255
-    sta WaitCounter
-
-  Done:
-    inc WaitCounter
-    asl $d019
-    jmp $ea31
-
-  WaitCounter: .byte 1
-}
-
-* = * "ScanLineZero"
-/* Executed everytime scanline starts from 0. It means, every
-screen refresh.*/
-ScanLineZero: {
     lda LifeEnd
     beq CheckGameOver
 
     jsr NewLifeSettings
-    rts
-    
+    jmp GameLoop
+
   CheckGameOver:
     lda GameOver
     beq IsNotOver
@@ -141,45 +71,39 @@ ScanLineZero: {
 
     Shooter_FreeAlienHit()
 
-    rts
-}
+    lda CounterForAliensMove
+    cmp #40
+    bne Check50th
 
-* = * "Scan30thSecond"
-Scan30thSecond: {
-    rts
-}
-
-* = * "Scan40thSecond"
-Scan40thSecond: {
-    lda GameOver
-    beq !+
-    rts
-
-  !:
     InvertValue(MoveTick)
 
 // Detect direction, based on current direction and
 // alien position
     DetectDirection(Direction, HasSwitched)
+    jmp GameLoop
 
-    rts
-}
+  Check50th:
+    lda CounterForAliensMove
+    cmp #50
+    beq GotoMoveAliens
 
-* = * "Scan50thSecond"
-Scan50thSecond: {
-    lda GameOver
-    beq !+
-    rts
+    jmp GameLoop
 
-  !:
-// If alien direction has switched, need to go down
+  GotoMoveAliens:
     AliensDescends(HasSwitched)
 
 // Move aliens according to direction
     MoveAliens(Direction, HasSwitched)
 
-    rts
+    lda #0
+    sta CounterForAliensMove
+
+    jmp GameLoop
+
+  CounterForAliensMove: .byte 0
 }
+
+WaitFrame: .byte 0
 
 .macro MainGameSettings() {
 // Switch out Basic so there is available ram on $a000-$bfff
@@ -249,17 +173,11 @@ NewLifeSettings: {
     sta HasSwitched
     sta MoveTick
 
-    lda #1
-    sta Irq.WaitCounter
-
     rts
 }
 
-* = * "NewGameSettings"
-NewGameSettings: {
-    jsr Hud.CompareAndUpdateHiScore
-    Hud_Init()
-
+* = * "FirstGameStart"
+FirstGameStart: {
     ShowIntroMap()
 
     CopyGameAreaScreenRam(MapDummyArea, MapData)
@@ -277,10 +195,51 @@ NewGameSettings: {
 
     jsr SpritesCommon.Init
 
-    lda #1
-    sta Irq.WaitCounter
-
+  Done:
     rts
+}
+
+* = * "NewGameSettings"
+NewGameSettings: {
+    lda DialogShown
+    bne AlreadyShown
+
+    CopyDialogScreenRam(DialogGameOver, MapData)
+    jsr SetColorToChars
+    inc DialogShown
+    jmp Done
+
+  AlreadyShown:
+    IsReturnPressed()
+    bne HideDialog
+    jmp Done
+
+  HideDialog:
+    jsr Hud.CompareAndUpdateHiScore
+    Hud_Init()
+
+    // ShowIntroMap()
+
+    CopyGameAreaScreenRam(MapDummyArea, MapData)
+
+    Aliens_Init_Level()
+    Shooter_Init_Level()
+
+    lda #0
+    sta StartNewGame
+    sta GameOver
+    sta LifeEnd
+    sta Direction
+    sta HasSwitched
+    sta MoveTick
+    sta DialogShown
+
+    jsr SpritesCommon.Init
+
+  Done:
+    rts
+
+  DialogShown: .byte 0
 }
 
 // If 1 then intro map is showing (no game action should be taken)

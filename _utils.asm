@@ -321,8 +321,6 @@ MoveAliensToLeft: {
   SetupNewLine:
     ldx #1
     ldy #0
-    sty RowWithAliensFound
-    sty RowsWithoutElements
 
     lda CurrentPosition
     sta T1 + 1
@@ -355,8 +353,6 @@ MoveAliensToLeft: {
     bcc CheckBlank
 
 // Alien, copy
-    inc RowWithAliensFound
-
     jmp HandleTick
 
 // Not a protection, not an alien, maybe a blank
@@ -423,10 +419,6 @@ MoveAliensToLeft: {
     beq Done
 
   NextLine:
-    inc RowsWithoutElements
-    lda RowsWithoutElements
-    cmp #2
-    beq Done
     c64lib_add16($0028, CurrentPosition)
     jmp SetupNewLine
 
@@ -434,8 +426,6 @@ MoveAliensToLeft: {
     rts
 
     CurrentPosition: .word $beef
-    RowWithAliensFound: .byte 0
-    RowsWithoutElements: .byte 0
 }
 
 * = * "MoveAliensToRight"
@@ -450,8 +440,6 @@ MoveAliensToRight: {
 
   SetupNewLine:
     lda #0
-    sta RowWithAliensFound
-    sta RowsWithoutElements
 
     ldy #30
     ldx #29
@@ -487,8 +475,6 @@ MoveAliensToRight: {
     bcc CheckBlank
 
 // Alien, copy
-    inc RowWithAliensFound
-
     jmp HandleTick
 
 // Not a protection, not an alien, maybe a blank
@@ -554,10 +540,6 @@ MoveAliensToRight: {
     beq Done
 
   NextLine:
-    inc RowsWithoutElements
-    lda RowsWithoutElements
-    cmp #2
-    beq Done
     c64lib_add16($0028, CurrentPosition)
     jmp SetupNewLine
 
@@ -565,8 +547,6 @@ MoveAliensToRight: {
     rts
 
     CurrentPosition: .word $beef
-    RowWithAliensFound: .byte 0
-    RowsWithoutElements: .byte 0
 }
 
 * = * "SetColorToChars"
