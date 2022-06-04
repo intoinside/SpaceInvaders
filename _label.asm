@@ -16,6 +16,20 @@ MapData:
   .import binary "./assets/mainmap.bin"
 * = $4800 "MapDummyArea"
 MapDummyArea:
+* = $4c00 "DialogLevelCompleted"
+DialogLevelCompleted:
+  .import binary "./assets/dialog-level-completed.bin"
+* = * "DialogGameOver"
+DialogGameOver:
+  .import binary "./assets/dialog-game-over.bin"
+
+* = * "ScreenMemTableL"
+ScreenMemTableL:
+.for (var i = 0; i<25; i++) .byte <MapData + (i * $28)
+
+* = * "ScreenMemTableH"
+ScreenMemTableH:
+.for (var i = 0; i<25; i++) .byte >MapData + (i * $28)
 
 .segment Charsets
 Charsets:
@@ -98,11 +112,3 @@ GameOver: .byte 0
 
 // 1 means shooter exploded
 LifeEnd: .byte 0
-
-* = * "ScreenMemTableL"
-ScreenMemTableL:
-.for (var i = 0; i<25; i++) .byte <MapData + (i * $28)
-
-* = * "ScreenMemTableH"
-ScreenMemTableH:
-.for (var i = 0; i<25; i++) .byte >MapData + (i * $28)

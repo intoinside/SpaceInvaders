@@ -76,7 +76,7 @@ preprocess {
                 right = 94
                 bottom = 14
                 interleaver {
-                    output = file("./assets/dialog-dialog-game-over.bin")
+                    output = file("./assets/dialog-game-over.bin")
                 }
                 interleaver {
                 }

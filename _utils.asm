@@ -60,7 +60,21 @@ limited to game area */
       lda StartAddress + (i * 40), x
       sta EndAddress + (i * 40), x
     }
-    cpx #$0
+    cpx #0
+    beq Done
+    jmp !-
+  Done:
+}
+
+.macro CopyDialogScreenRam(StartAddress, EndAddress) {
+    ldx #14
+  !:
+    dex
+    .for (var i = 0; i < 7 ; i++) {
+      lda StartAddress + (i * 40), x
+      sta EndAddress + (i * 40) + 13, x
+    }
+    cpx #0
     beq Done
     jmp !-
   Done:
