@@ -146,7 +146,8 @@ HandleShoot: {
     beq MoveBullet
 
     jsr AddPointsForAliens
-    
+
+  !:
     lda ScreenPositionCollided
     sta UpdateScreen + 1
     sta ScreenPositionCollidedPrev
@@ -286,11 +287,6 @@ ShowExplosion: {
     ora #%00000100
     sta c64lib.SPRITE_ENABLE
 
-    dec Aliens.CountAlive
-    bne !+
-    inc LevelCompleted
-
-  !:
     inc ExplosionCounter
     bne Done
 
@@ -475,7 +471,7 @@ AddPointsForAliens: {
     cmp #MAP.ALIEN_1 + 4
     bcs !+
     AddPoints(0, 2, 5)
-    jmp Done
+    jmp ExplodedAlien
 
   DoneFar:
     jmp Done
@@ -486,7 +482,7 @@ AddPointsForAliens: {
     cmp #MAP.ALIEN_2 + 4
     bcs !+
     AddPoints(0, 2, 0)
-    jmp Done
+    jmp ExplodedAlien
 
   !:
     cmp #MAP.ALIEN_3
@@ -494,7 +490,7 @@ AddPointsForAliens: {
     cmp #MAP.ALIEN_3 + 4
     bcs !+
     AddPoints(0, 1, 5)
-    jmp Done
+    jmp ExplodedAlien
 
   !:
     cmp #MAP.ALIEN_4
@@ -502,7 +498,7 @@ AddPointsForAliens: {
     cmp #MAP.ALIEN_4 + 4
     bcs !+
     AddPoints(0, 1, 0)
-    jmp Done
+    jmp ExplodedAlien
 
   !:
     cmp #MAP.ALIEN_5
@@ -510,6 +506,11 @@ AddPointsForAliens: {
     cmp #MAP.ALIEN_5 + 4
     bcs Done
     AddPoints(0, 0, 5)
+
+  ExplodedAlien:
+    dec Aliens.CountAlive
+    bne Done
+    inc LevelCompleted
 
   Done:
     pla

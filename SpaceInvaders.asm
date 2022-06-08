@@ -47,7 +47,7 @@ Entry: {
     CopyDialogScreenRam(DialogLevelCompleted, MapData)
     jsr SetColorToChars
     IsJoystickFirePressedAndReleased()
-    
+
     jsr NewLevelSettings
     jmp GameLoop
 
@@ -188,6 +188,7 @@ NewLifeSettings: {
     sta Direction
     sta HasSwitched
     sta MoveTick
+    sta Entry.CounterForAliensMove
 
     rts
 }
@@ -210,6 +211,7 @@ NewGameSettings: {
     sta Direction
     sta HasSwitched
     sta MoveTick
+    sta Entry.CounterForAliensMove
 
     jsr SpritesCommon.Init
 
