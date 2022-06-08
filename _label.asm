@@ -112,3 +112,6 @@ GameOver: .byte 0
 
 // 1 means shooter exploded
 LifeEnd: .byte 0
+
+// 1 means all aliens exploded
+LevelCompleted: .byte 0

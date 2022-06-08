@@ -22,7 +22,7 @@
 .filenamespace Aliens
 
 // Alien count, determined at start and updated when and alien is destroyed
-Count: .byte 0
+CountAlive: .byte 0
 
 // An alien is currently shooting
 IsShooting: .byte 0
@@ -38,7 +38,7 @@ Init: {
     sta CurrentPosition + 1
 
     lda #0
-    sta Count
+    sta CountAlive
 
   SetupNewLine:
     ldx #30
@@ -57,7 +57,7 @@ Init: {
     cmp #MAP.ALIEN_1
     bcc CheckRowEnded
 
-    inc Count
+    inc CountAlive
 
   CheckRowEnded:
     dex
@@ -78,9 +78,9 @@ Init: {
     jmp SetupNewLine
 
   Done:
-    lda Count
+    lda CountAlive
     lsr
-    sta Count
+    sta CountAlive
     rts
 
     CurrentPosition: .word $beef

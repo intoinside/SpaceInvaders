@@ -41,6 +41,17 @@ Entry: {
 
     inc CounterForAliensMove
 
+    lda LevelCompleted
+    beq !+
+
+    CopyDialogScreenRam(DialogLevelCompleted, MapData)
+    jsr SetColorToChars
+    IsJoystickFirePressedAndReleased()
+    
+    jsr NewLevelSettings
+    jmp GameLoop
+
+  !:
     lda LifeEnd
     beq CheckGameOver
 
@@ -147,6 +158,16 @@ WaitFrame: .byte 0
     jsr SetColorToChars
 }
 
+* = * "NewLevelSettings"
+NewLevelSettings: {
+    jsr NewLifeSettings
+
+    lda #0
+    sta LevelCompleted
+
+    rts
+}
+
 * = * "NewLifeSettings"
 NewLifeSettings: {
     CopyGameAreaScreenRam(MapDummyArea, MapData)
@@ -162,6 +183,7 @@ NewLifeSettings: {
 
     lda #0
     sta StartNewGame
+    sta LevelCompleted
     sta LifeEnd
     sta Direction
     sta HasSwitched
@@ -183,6 +205,7 @@ NewGameSettings: {
     lda #0
     sta StartNewGame
     sta GameOver
+    sta LevelCompleted
     sta LifeEnd
     sta Direction
     sta HasSwitched

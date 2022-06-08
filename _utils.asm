@@ -72,7 +72,7 @@ limited to game area */
     dex
     .for (var i = 0; i < 7 ; i++) {
       lda StartAddress + (i * 14), x
-      sta EndAddress + ((i + 0) * 40) + 8, x
+      sta EndAddress + ((i + 4) * 40) + 8, x
     }
     cpx #0
     beq Done

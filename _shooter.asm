@@ -286,9 +286,15 @@ ShowExplosion: {
     ora #%00000100
     sta c64lib.SPRITE_ENABLE
 
-    inc ExplosionCounter
-    dec Aliens.Count
+    dec Aliens.CountAlive
+    bne !+
+    inc LevelCompleted
 
+  !:
+    inc ExplosionCounter
+    bne Done
+
+  Done:
     rts
 }
 
