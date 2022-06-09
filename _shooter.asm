@@ -288,6 +288,8 @@ ShowExplosion: {
     ora #%00000100
     sta c64lib.SPRITE_ENABLE
 
+    PlaySound(10, 2, 2)
+
     inc ExplosionCounter
     bne Done
 
@@ -416,6 +418,8 @@ ShowFreeAlienExplosion: {
     sta SPRITES.SPRITES_3
     lda #YELLOW
     sta c64lib.SPRITE_3_COLOR
+
+    PlaySound(10, 2, 2)
 
     rts
 }

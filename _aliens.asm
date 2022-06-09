@@ -325,6 +325,8 @@ ShowExplosion: {
     ora #%00100000
     sta c64lib.SPRITE_ENABLE
 
+    PlaySound(10, 2, 2)
+
     rts
 }
 
