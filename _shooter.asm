@@ -249,6 +249,7 @@ Shoot: {
     ora #%00000010
     sta c64lib.SPRITE_ENABLE
 
+    PlaySound(15, 0, 0)
   Done:
     rts
 }

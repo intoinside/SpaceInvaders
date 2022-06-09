@@ -161,6 +161,8 @@ Shoot: {
     ora #%00010000
     sta c64lib.SPRITE_ENABLE
 
+    PlaySound(10, 1, 1)
+
     jmp Done
 
   CheckRowEnded:

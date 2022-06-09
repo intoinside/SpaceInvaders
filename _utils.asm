@@ -28,6 +28,14 @@ CheckLifeLeftAndGameOver: {
     rts
 }
 
+.macro PlaySound(volume, sfxnumber, voice) {
+    lda #volume
+    sta $d418       // set volume
+    lda #sfxnumber  // sfx number
+    ldy #voice      // voice number
+    jsr $c04a       // play sound
+}
+
 .macro GetRandomNumberInRange(minNumber, maxNumber) {
     lda #minNumber
     sta Utils.GetRandom.GeneratorMin

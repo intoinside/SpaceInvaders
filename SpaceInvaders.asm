@@ -1,7 +1,7 @@
 
 #import "_label.asm"
 
-.file [name="./SpaceInvaders.prg", segments="Code, Charsets, CharsetsColors, Map, Sprites", modify="BasicUpstart", _start=$0810]
+.file [name="./SpaceInvaders.prg", segments="Code, Charsets, CharsetsColors, Sounds, Map, Sprites", modify="BasicUpstart", _start=$0810]
 .disk [filename="./SpaceInvaders.d64", name="SPACEINVADERS", id="C2022", showInfo]
 {
   [name="----------------", type="rel"],
@@ -9,7 +9,7 @@
   [name="--- INTORCIA ---", type="rel"],
   [name="-- @GMAIL.COM --", type="rel"],
   [name="----------------", type="rel"],
-  [name="SPACEINVADERS", type="prg", segments="Code, Charsets, CharsetsColors, Map, Sprites", modify="BasicUpstart", _start=$0810],
+  [name="SPACEINVADERS", type="prg", segments="Code, Charsets, CharsetsColors, Sounds, Map, Sprites", modify="BasicUpstart", _start=$0810],
   [name="----------------", type="rel"]
 }
 
@@ -127,6 +127,18 @@ WaitFrame: .byte 0
     lda #0
     sta c64lib.BG_COL_0
     sta c64lib.BORDER_COL
+
+    sei
+    lda #<my_irq
+    sta $0314
+    lda #>my_irq
+    sta $0315
+    cli
+}
+
+my_irq: {
+    jsr $c237 // play all voices!
+    jmp $ea31
 }
 
 .macro ShowIntroMap() {
