@@ -77,7 +77,7 @@ Entry: {
     Shooter_FreeAlienHit()
 
     lda CounterForAliensMove
-    cmp #40
+    cmp #1
     bne Check50th
 
     InvertValue(MoveTick)
@@ -89,6 +89,7 @@ Entry: {
 
   Check50th:
     lda CounterForAliensMove
+  SelfModCodeForSpeed:
     cmp #50
     beq GotoMoveAliens
 
@@ -177,6 +178,16 @@ NewLevelSettings: {
     lda #0
     sta LevelCompleted
 
+    lda Entry.SelfModCodeForSpeed + 1
+    sec
+    sbc #4    
+    cmp #20
+    bcs Done
+    lda #20
+
+  Done:
+    sta Entry.SelfModCodeForSpeed + 1
+
     rts
 }
 
@@ -224,6 +235,9 @@ NewGameSettings: {
     sta HasSwitched
     sta MoveTick
     sta Entry.CounterForAliensMove
+
+    lda #50
+    sta Entry.SelfModCodeForSpeed + 1
 
     jsr SpritesCommon.Init
 
