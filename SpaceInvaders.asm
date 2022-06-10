@@ -129,14 +129,14 @@ WaitFrame: .byte 0
     sta c64lib.BORDER_COL
 
     sei
-    lda #<my_irq
+    lda #<RasterIrq
     sta $0314
-    lda #>my_irq
+    lda #>RasterIrq
     sta $0315
     cli
 }
 
-my_irq: {
+RasterIrq: {
     jsr $c237 // play all voices!
     jmp $ea31
 }
