@@ -359,6 +359,7 @@ HandleFreeAlien: {
     sta DummyWaitForSwitch
 
     lda SPRITES.SPRITES_3
+  SelfModFreeAlien1:
     cmp #SPRITES.FREEALIEN_1A
     bne SwitchBack
     inc SPRITES.SPRITES_3
@@ -383,10 +384,9 @@ HandleFreeAlien: {
     ora #%00001000
     sta c64lib.SPRITE_ENABLE
 
+  SelfModFreeAlien2:
     lda #SPRITES.FREEALIEN_1A
     sta SPRITES.SPRITES_3
-    lda #LIGHT_GRAY
-    sta c64lib.SPRITE_3_COLOR
 
     inc AlienShowing
 

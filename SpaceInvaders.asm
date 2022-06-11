@@ -180,16 +180,56 @@ NewLevelSettings: {
     lda #0
     sta LevelCompleted
 
+// Change speed
     lda Entry.SelfModCodeForSpeed + 1
     sec
     sbc #4    
     cmp #20
-    bcs Done
+    bcs DoneSpeed
     lda #20
 
-  Done:
+  DoneSpeed:
     sta Entry.SelfModCodeForSpeed + 1
 
+// Change free alien sprite
+    lda Shooter.HandleFreeAlien.SelfModFreeAlien1 + 1
+    cmp #SPRITES.FREEALIEN_1A
+    beq SetTo2A
+    cmp #SPRITES.FREEALIEN_2A
+    beq SetTo3A
+    cmp #SPRITES.FREEALIEN_3A
+    beq SetTo4A
+    cmp #SPRITES.FREEALIEN_4A
+    beq SetTo5A
+    
+    ldx #LIGHT_GREY
+    lda #SPRITES.FREEALIEN_1A
+    jmp SetFreeAlien
+
+  SetTo2A:
+    ldx #DARK_GRAY
+    lda #SPRITES.FREEALIEN_2A
+    jmp SetFreeAlien
+
+  SetTo3A:
+    ldx #YELLOW
+    lda #SPRITES.FREEALIEN_3A
+    jmp SetFreeAlien
+
+  SetTo4A:
+    ldx #PURPLE
+    lda #SPRITES.FREEALIEN_4A
+    jmp SetFreeAlien
+
+  SetTo5A:
+    ldx #GREEN
+    lda #SPRITES.FREEALIEN_5A
+
+  SetFreeAlien:
+    stx c64lib.SPRITE_3_COLOR
+    sta Shooter.HandleFreeAlien.SelfModFreeAlien1 + 1
+    sta Shooter.HandleFreeAlien.SelfModFreeAlien2 + 1
+  Done:
     rts
 }
 
@@ -240,6 +280,12 @@ NewGameSettings: {
 
     lda #50
     sta Entry.SelfModCodeForSpeed + 1
+
+    lda #LIGHT_GREY
+    sta c64lib.SPRITE_3_COLOR
+    lda #SPRITES.FREEALIEN_1A
+    sta Shooter.HandleFreeAlien.SelfModFreeAlien1 + 1
+    sta Shooter.HandleFreeAlien.SelfModFreeAlien2 + 1
 
     jsr SpritesCommon.Init
 
