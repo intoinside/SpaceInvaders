@@ -103,23 +103,23 @@ DrawScore: {
   .label ScorePtr = $beef
 }
 
+* = * "Hud CompareAndUpdateHiScore"
 CompareAndUpdateHiScore: {
-    lda HiScoreLabel
-    cmp ScoreLabel
-    bcc UpdateHiScore1
-    lda HiScoreLabel + 1
-    cmp ScoreLabel + 1
-    bcc UpdateHiScore2
-    lda HiScoreLabel + 2
-    cmp ScoreLabel + 2
-    bcc UpdateHiScore3
-    lda HiScoreLabel + 3
-    cmp ScoreLabel + 3
-    bcc UpdateHiScore4
-    lda HiScoreLabel + 4
-    cmp ScoreLabel + 4
-    bcc UpdateHiScore5
-    jmp !+
+    lda ScoreLabel
+    cmp HiScoreLabel
+    bcc !+
+    lda ScoreLabel + 1
+    cmp HiScoreLabel + 1
+    bcc !+
+    lda ScoreLabel + 2
+    cmp HiScoreLabel + 2
+    bcc !+
+    lda ScoreLabel + 3
+    cmp HiScoreLabel + 3
+    bcc !+
+    lda ScoreLabel + 4
+    cmp HiScoreLabel + 4
+    bcc !+
 
   UpdateHiScore1:
     lda ScoreLabel

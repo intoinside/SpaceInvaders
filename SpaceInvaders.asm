@@ -67,6 +67,8 @@ Entry: {
     jsr SetColorToChars
     IsJoystickFirePressedAndReleased()
 
+    jsr Hud.CompareAndUpdateHiScore
+
     jsr NewGameSettings
     jmp IntroLoop
 
