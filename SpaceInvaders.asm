@@ -27,10 +27,12 @@ Entry: {
 
     jsr NewGameSettings
 
+// Loop with intro screen
   IntroLoop:
     IsJoystickFirePressedAndReleased()
     RemoveIntroMap()
 
+// Loop for internal game
   GameLoop:
     jsr Utils.WaitRoutine
     lda c64lib.SPRITE_2B_COLLISION
@@ -44,6 +46,7 @@ Entry: {
     lda LevelCompleted
     beq !+
 
+// Level completed, show dialog
     CopyDialogScreenRam(DialogLevelCompleted, MapData)
     jsr SetColorToChars
     IsJoystickFirePressedAndReleased()
@@ -55,6 +58,7 @@ Entry: {
     lda LifeEnd
     beq CheckGameOver
 
+// Shooter exploded, next life
     jsr NewLifeSettings
     jmp GameLoop
 
@@ -62,7 +66,7 @@ Entry: {
     lda GameOver
     beq IsNotOver
 
-    // GameOver, show dialog or wait for firepress
+// GameOver, show dialog or wait for firepress
     CopyDialogScreenRam(DialogGameOver, MapData)
     jsr SetColorToChars
     IsJoystickFirePressedAndReleased()
@@ -73,6 +77,7 @@ Entry: {
     jmp IntroLoop
 
   IsNotOver:
+// Game is in progress, detect shooter and alines move
     Shooter_Handle()
     Aliens_Handle()
 
@@ -80,7 +85,7 @@ Entry: {
 
     lda CounterForAliensMove
     cmp #1
-    bne Check50th
+    bne CheckMoveAlienIteration
 
     InvertValue(MoveTick)
 
@@ -89,7 +94,7 @@ Entry: {
     DetectDirection(Direction, HasSwitched)
     jmp GameLoop
 
-  Check50th:
+  CheckMoveAlienIteration:
     lda CounterForAliensMove
   SelfModCodeForSpeed:
     cmp #50
@@ -98,9 +103,9 @@ Entry: {
     jmp GameLoop
 
   GotoMoveAliens:
+// Move aliens
     AliensDescends(HasSwitched)
 
-// Move aliens according to direction
     MoveAliens(Direction, HasSwitched)
 
     lda #0
@@ -180,7 +185,7 @@ NewLevelSettings: {
     lda #0
     sta LevelCompleted
 
-// Change speed
+// Change speed (with a maximun)
     lda Entry.SelfModCodeForSpeed + 1
     sec
     sbc #4    
