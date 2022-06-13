@@ -45,12 +45,12 @@ CheckLifeLeftAndGameOver: {
 }
 
 .macro addaccumulatortovar16(dest) {
-  clc
-  adc dest
-  sta dest
-  lda dest + 1
-  adc #0 //adc value + 1
-  sta dest + 1
+    clc
+    adc dest
+    sta dest
+    lda dest + 1
+    adc #0 //adc value + 1
+    sta dest + 1
 }
 /*
 .assert "add16($0102, $A000) ", { add16($0102, $A000) }, {

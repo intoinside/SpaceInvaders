@@ -41,7 +41,6 @@ CharsetsColors:
   .import binary "./assets/charcolors.bin"
 
 .segment Sounds
-* = $c000
 Sounds:
 .byte $bd,$bf,$c2,$99,$68,$c2,$bd,$c2,$c2,$99,$6b,$c2,$bd,$cb,$c2,$99
 .byte $74,$c2,$bd,$ce,$c2,$99,$77,$c2,$bd,$c5,$c2,$99,$6e,$c2,$bd,$c8

@@ -49,7 +49,7 @@ GetJoystickMove: {
     rts
 }
 
-* = * "Joystick GetJoystickMove"
+* = * "Joystick IsFirePressed"
 IsFirePressed: {
     lda #0
     sta $dc02
