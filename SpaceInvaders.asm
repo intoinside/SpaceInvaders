@@ -1,7 +1,7 @@
 
 #import "_label.asm"
 
-.file [name="./SpaceInvaders.prg", segments="Code, Charsets, CharsetsColors, Sounds, Map, Sprites", modify="BasicUpstart", _start=$0810]
+.file [name="./SpaceInvaders.prg", segments="Intro, Code, Charsets, CharsetsColors, Sounds, Map, Sprites", modify="BasicUpstart", _start=$0810]
 .disk [filename="./SpaceInvaders.d64", name="SPACEINVADERS", id="C2022", showInfo]
 {
   [name="----------------", type="rel"],
@@ -9,7 +9,7 @@
   [name="--- INTORCIA ---", type="rel"],
   [name="-- @GMAIL.COM --", type="rel"],
   [name="----------------", type="rel"],
-  [name="SPACEINVADERS", type="prg", segments="Code, Charsets, CharsetsColors, Sounds, Map, Sprites", modify="BasicUpstart", _start=$0810],
+  [name="SPACEINVADERS", type="prg", segments="Intro, Code, Charsets, CharsetsColors, Sounds, Map, Sprites", modify="BasicUpstart", _start=$0810],
   [name="----------------", type="rel"]
 }
 
@@ -17,9 +17,13 @@
 
 * = $0810 "Entry"
 Entry: {
+    MainGameSettings()
+
+    ShowIntroBitmap()
+
     IsReturnPressedAndReleased()
 
-    MainGameSettings()
+    AfterIntroSettings()
 
     CopyGameAreaScreenRam(MapData, MapDummyArea)
 
@@ -128,9 +132,36 @@ WaitFrame: .byte 0
 // Set Vic bank 1 ($4000-$7fff)
     lda #%00000010
     sta CIA2.PORT_A
+}
 
+.macro ShowIntroBitmap() {
+    lda #%01111000  // Bitmap mem $2000, Screen mem $1c00 (+VIC $4000)
+    sta c64lib.MEMORY_CONTROL
+    lda #%11011000  // 40 cols, multicolor mode
+    sta c64lib.CONTROL_2
+    lda #%00111011
+    sta c64lib.CONTROL_1
+
+    ldx #0
+  !Loop:
+    .for (var i=0; i<4; i++) {
+      lda IntroColorRam + i * $100, x
+      sta $d800 + i * $100, x
+    }
+    inx
+    bne !Loop-
+
+    lda #picture.getBackgroundColor()
+    sta $d020
+    sta $d021
+}
+
+.macro AfterIntroSettings() {
     lda #%11001000  // 40 cols, multicolor mode
     sta c64lib.CONTROL_2
+
+    lda #%00011011
+    sta c64lib.CONTROL_1
 
     lda #0
     sta c64lib.BG_COL_0

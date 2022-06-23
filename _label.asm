@@ -4,8 +4,9 @@
 .segmentdef Code
 .segmentdef Map [start=$4000]
 .segmentdef Sprites [start=$5000]
+.segmentdef CharsetsColors [start=$5600]
 .segmentdef Charsets [start=$5800]
-.segmentdef CharsetsColors [start=$6000]
+.segmentdef Intro
 .segmentdef Sounds [start=$c000]
 
 .segment Map
@@ -39,6 +40,15 @@ Charsets:
 .segment CharsetsColors
 CharsetsColors:
   .import binary "./assets/charcolors.bin"
+
+.segment Intro
+.var picture = LoadBinary("./assets/intro.koa", BF_KOALA)
+* = $6000 "IntroBitmap";
+IntroBitmap:  .fill picture.getBitmapSize(), picture.getBitmap(i)
+* = $5c00 "MapForBitmap";
+MapForBitmap: .fill picture.getScreenRamSize(), picture.getScreenRam(i)
+* = $9400 "IntroColorRam";
+IntroColorRam:   .fill picture.getColorRamSize(), picture.getColorRam(i)
 
 .segment Sounds
 Sounds:
