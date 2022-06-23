@@ -634,8 +634,8 @@ SetColorToCharsForIntromap: {
     inc PaintCols + 2
     inc ColorMap + 2
     dec CleanLoop
-    lda CleanLoop
     beq Done
+    lda CleanLoop
     cmp #$01
     beq SetLastRun
     jmp StartLoop
@@ -646,6 +646,10 @@ SetColorToCharsForIntromap: {
     jmp StartLoop
 
   Done:
+    ldy IntroMapData + c64lib_getTextOffset(8, 19);
+    lda CharsetsColors, y
+    sta $db00, x
+  
     rts
 
   CleanLoop: .byte $03
