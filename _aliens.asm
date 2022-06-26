@@ -273,10 +273,8 @@ HandleShoot: {
 
   MoveBullet:
 // No collision detect, move bullet to down
+    inc c64lib.SPRITE_4_Y
     lda c64lib.SPRITE_4_Y
-    clc
-    adc #2
-    sta c64lib.SPRITE_4_Y
     cmp #245
     bcc Done
 
