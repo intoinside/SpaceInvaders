@@ -5,6 +5,15 @@
 .disk [filename="./SpaceInvaders.d64", name="SPACEINVADERS", id="C2022", showInfo]
 {
   [name="----------------", type="rel"],
+  [name="     *    *     ", type="rel"],
+  [name="   *  *  *  *   ", type="rel"],
+  [name="   * ****** *   ", type="rel"],
+  [name="   *** ** ***   ", type="rel"],
+  [name="    ********    ", type="rel"],
+  [name="     ******     ", type="rel"],
+  [name="     *    *     ", type="rel"],
+  [name="    *      *    ", type="rel"],
+  [name="----------------", type="rel"],
   [name="--- RAFFAELE ---", type="rel"],
   [name="--- INTORCIA ---", type="rel"],
   [name="-- @GMAIL.COM --", type="rel"],
@@ -21,13 +30,11 @@ Entry: {
 
     ShowIntroBitmap()
 
-    IsReturnPressedAndReleased()
+    IsJoystickFirePressedAndReleased()
 
     AfterIntroSettings()
 
     CopyGameAreaScreenRam(MapData, MapDummyArea)
-
-    jsr Keyboard.Init
 
     jsr NewGameSettings
 
@@ -341,7 +348,6 @@ HasSwitched: .byte 0
 #import "_aliens.asm"
 #import "_sprites.asm"
 #import "_shooter.asm"
-#import "_keyboard.asm"
 #import "_joystick.asm"
 #import "_utils.asm"
 

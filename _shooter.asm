@@ -582,7 +582,6 @@ ExplosionCounter: .byte 0
 #import "./_label.asm"
 #import "./_utils.asm"
 #import "./_hud.asm"
-#import "./_keyboard.asm"
 
 #import "./chipset/lib/vic2.asm"
 #import "./common/lib/math-global.asm"
