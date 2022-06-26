@@ -1,6 +1,7 @@
 
 #importonce
 
+/* Init hud for a new game. */
 .macro Hud_Init() {
     lda #MAP.ZeroChar
     sta Hud.ScoreLabel
@@ -20,7 +21,7 @@
     sta Hud.CurrentScore + 4
 }
 
-/* Add points to current score */
+/* Add points to current score. */
 .macro AddPoints(digit3, digit2, digit1) {
     lda #digit1
     sta Hud.AddScore.Points + 2
@@ -35,6 +36,8 @@
 .filenamespace Hud
 
 * = * "Hud AddScore"
+/* Add points to current score, used in conjunction with macro
+AddPoints. */
 AddScore: {
     ldx #3
     clc
@@ -58,6 +61,7 @@ AddScore: {
 }
 
 * = * "Hud ResetScore"
+/* Reset current score to zero. */
 ResetScore: {
     ldx #5
     lda #0
@@ -70,6 +74,7 @@ ResetScore: {
 }
 
 * = * "Hud DrawScore"
+/* Draw current score to screen. */
 DrawScore: {
   // Append current score on score label
     ldx #0
@@ -104,6 +109,7 @@ DrawScore: {
 }
 
 * = * "Hud CompareAndUpdateHiScore"
+/* Compare and update, if necessary, hiscore. */
 CompareAndUpdateHiScore: {
     lda ScoreLabel
     cmp HiScoreLabel

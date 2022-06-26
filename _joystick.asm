@@ -1,6 +1,7 @@
 
 #importonce
 
+/* Used to wait for a joystick fire press and release. */
 .macro IsJoystickFirePressedAndReleased() {
   !:
     jsr Joystick.IsFirePressed
@@ -22,6 +23,7 @@ Direction: .byte $00
 FirePressed: .byte $00
 
 * = * "Joystick GetJoystickMove"
+/* Handle joystick move and fire press. */
 GetJoystickMove: {
     lda #0
     sta $dc02
@@ -46,10 +48,12 @@ GetJoystickMove: {
     ldx #$ff
   !NoFirePressed:
     stx FirePressed
+    
     rts
 }
 
 * = * "Joystick IsFirePressed"
+/* Detect fire press status. */
 IsFirePressed: {
     lda #0
     sta $dc02
@@ -66,5 +70,6 @@ IsFirePressed: {
     ldx #$ff
   !NoFirePressed:
     stx FirePressed
+
     rts
 }

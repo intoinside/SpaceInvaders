@@ -272,6 +272,7 @@ NewLevelSettings: {
     stx c64lib.SPRITE_3_COLOR
     sta Shooter.HandleFreeAlien.SelfModFreeAlien1 + 1
     sta Shooter.HandleFreeAlien.SelfModFreeAlien2 + 1
+    
   Done:
     rts
 }

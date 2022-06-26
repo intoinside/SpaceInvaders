@@ -33,13 +33,16 @@ ScreenMemTableL:
 ScreenMemTableH:
 .for (var i = 0; i<25; i++) .byte >MapData + (i * $28)
 
+
 .segment Charsets
 Charsets:
   .import binary "./assets/charset.bin"
 
+
 .segment CharsetsColors
 CharsetsColors:
   .import binary "./assets/charcolors.bin"
+
 
 .segment Intro
 .var picture = LoadBinary("./assets/intro.koa", BF_KOALA)
@@ -49,6 +52,7 @@ IntroBitmap:  .fill picture.getBitmapSize(), picture.getBitmap(i)
 MapForBitmap: .fill picture.getScreenRamSize(), picture.getScreenRam(i)
 * = $9400 "IntroColorRam";
 IntroColorRam:   .fill picture.getColorRamSize(), picture.getColorRam(i)
+
 
 .segment Sounds
 Sounds:
@@ -99,6 +103,7 @@ Sounds:
 .byte $cb,$c1,$fc,$fc,$fd,$bf,$bc,$fe,$ff,$ff,$ff,$62,$56,$52,$19,$30
 .byte $04,$fa,$bf,$71,$fc,$fc,$fd,$da,$83,$00,$ff,$ff,$00,$71,$93,$9f
 .byte $13,$18,$01
+
 
 .segment Sprites
 Sprites:

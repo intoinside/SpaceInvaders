@@ -13,6 +13,7 @@ Sprite recap
 .filenamespace SpritesCommon
 
 * = * "Sprites Init"
+/* New life sprite initialization. */
 Init: {
     lda #%11111111
     sta c64lib.SPRITE_COL_MODE

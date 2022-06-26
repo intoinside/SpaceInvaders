@@ -81,6 +81,7 @@ Init: {
     lda CountAlive
     lsr
     sta CountAlive
+
     rts
 
     CurrentPosition: .word $beef
@@ -290,6 +291,7 @@ HandleShoot: {
 }
 
 * = * "Aliens ShootFinished"
+/* Shoot has ended, remove bullet sprite. */
 ShootFinished: {
     lda IsShooting
     beq Done
@@ -305,6 +307,7 @@ ShootFinished: {
 }
 
 * = * "Aliens ShowExplosion"
+/* There is an explosion, show explosion sprite and play sound. */
 ShowExplosion: {
     lda c64lib.SPRITE_4_X
     sec
@@ -329,6 +332,7 @@ ShowExplosion: {
 }
 
 * = * "Aliens Explosions"
+/* Handle explosion sprite. */
 Explosions: {
     lda c64lib.SPRITE_ENABLE
     and #%00100000

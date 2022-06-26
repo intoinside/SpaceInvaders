@@ -3,7 +3,7 @@
 
 FreeAlienExploding: .byte 0
 
-// Handle all screen-refresh-depend actions
+// Handle all screen-refresh-depend actions.
 .macro Shooter_Handle() {
     jsr Shooter.Move
 
@@ -20,6 +20,7 @@ FreeAlienExploding: .byte 0
   !:
 }
 
+// Prepare shooter for new level.
 .macro Shooter_Init_Level() {
     lda #0
     sta Shooter.HitAndExploding.IsExploding
@@ -29,6 +30,7 @@ FreeAlienExploding: .byte 0
     jsr Shooter.Init
 }
 
+// Detect if shooter-bullet hit free alien.
 .macro Shooter_FreeAlienHit() {
     lda CollisionSprDummy
     cmp #%00001010
@@ -42,6 +44,7 @@ FreeAlienExploding: .byte 0
 .filenamespace Shooter
 
 * = * "Shooter Init"
+/* Init shooter, used in conjunction with Shooter_Init_Level. */
 Init: {
     lda #125
     sta c64lib.SPRITE_0_X
@@ -52,6 +55,8 @@ Init: {
 }
 
 * = * "Shooter Move"
+/* Move shooter based on joystick status, detect if a new shoot should
+start. */
 Move: {
     jsr Joystick.GetJoystickMove
 
@@ -84,7 +89,7 @@ Move: {
 }
 
 * = * "Shooter StillAlive"
-/* Check if shooter is still alive by looking at collision with alien */
+/* Check if shooter is still alive by looking at collision with alien. */
 StillAlive: {
     lda #%00000001
     bit CollisionBkgDummy
@@ -99,6 +104,7 @@ StillAlive: {
 }
 
 * = * "Shooter HandleShoot"
+/* Handle a shoot. */
 HandleShoot: {
     lda IsShooting
     bne ShootingInProgress
@@ -228,6 +234,7 @@ HandleShoot: {
 }
 
 * = * "Shooter Shoot"
+/* Creates a new shoot. */
 Shoot: {
     lda IsShooting
     bne Done
@@ -255,6 +262,7 @@ Shoot: {
 }
 
 * = * "Shooter ShootFinished"
+/* Handle a finished shoot. */
 ShootFinished: {
     lda IsShooting
     beq Done
@@ -270,6 +278,7 @@ ShootFinished: {
 }
 
 * = * "Shooter ShowExplosion"
+/* Show explosion and play sound. */
 ShowExplosion: {
     lda c64lib.SPRITE_1_X
     sec
@@ -298,6 +307,7 @@ ShowExplosion: {
 }
 
 * = * "Shooter Explosions"
+/* Handle explosion evolution. */
 Explosions: {
     lda c64lib.SPRITE_ENABLE
     and #%00000100
@@ -335,6 +345,7 @@ Explosions: {
 }
 
 * = * "Shooter HandleFreeAlien"
+/* Handle free alien movement. */
 HandleFreeAlien: {
     lda AlienShowing
     beq AlienNotAlive
@@ -411,6 +422,7 @@ HandleFreeAlien: {
 }
 
 * = * "Shooter ShowFreeAlienExplosion"
+/* Show a free alien explosion. */
 ShowFreeAlienExplosion: {
     inc FreeAlienExploding
 
@@ -425,6 +437,7 @@ ShowFreeAlienExplosion: {
 }
 
 * = * "Shooter FreeAlienExplosions"
+/* Handle a free aliex explosion. */
 FreeAlienExplosions: {
     lda FreeAlienExploding
     beq Done
@@ -469,6 +482,7 @@ FreeAlienExplosions: {
 }
 
 * = * "Shooter AddPointsForAliens"
+/* Add points when free alien explodes. */
 AddPointsForAliens: {
     pha
     cmp #MAP.ALIEN_1
@@ -519,20 +533,21 @@ AddPointsForAliens: {
 
   Done:
     pla
+
     rts
 }
 
 * = * "Shooter StartHitAndExploding"
+/* Shooter is exploding. */
 StartHitAndExploding: {
     lda #1
     sta HitAndExploding.IsExploding
 
-    jsr HitAndExploding
-
-    rts
+    jmp HitAndExploding // jsr + rts
 }
 
 * = * "Shooter HitAndExploding"
+/* Handle shooter frame while exploding. */
 HitAndExploding: {
     lda IsExploding
     beq Done

@@ -52,11 +52,6 @@ CheckLifeLeftAndGameOver: {
     adc #0 //adc value + 1
     sta dest + 1
 }
-/*
-.assert "add16($0102, $A000) ", { add16($0102, $A000) }, {
-  clc; lda $A000; adc #$02; sta $A000
-  lda $A001; adc #$01; sta $A001
-}*/
 
 /* Create a screen memory backup from StartAddress to EndAddress but
 limited to game area */
@@ -572,6 +567,7 @@ MoveAliensToRight: {
 }
 
 * = * "SetColorToChars"
+/* Set color for game map. */
 SetColorToChars: {
     lda #$04
     sta CleanLoop
@@ -612,6 +608,7 @@ SetColorToChars: {
 }
 
 * = * "SetColorToCharsForIntromap"
+/* Set color for intro map. */
 SetColorToCharsForIntromap: {
     lda #$04
     sta CleanLoop
@@ -684,6 +681,7 @@ GetRandom: {
     bcs Loop
     cmp GeneratorMin
     bcc Loop
+
     rts
 
     GeneratorMin: .byte $00
